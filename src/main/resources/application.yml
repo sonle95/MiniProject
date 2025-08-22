@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: backend
+  datasource:
+    url: jdbc:mysql://localhost:3306/iviettech?createDatabaseIfNotExist=true
+    username: root
+    password: Yeuem@95
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+  file:
+    upload-dir=src/main/resources/static/uploads/:
+server:
+  port: 8080
