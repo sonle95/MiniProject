@@ -1,2 +1,2 @@
 # MiniProject
-mini project written in spring boot framwork
+mini project written in spring boot framework
