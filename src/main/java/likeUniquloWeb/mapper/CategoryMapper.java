@@ -10,6 +10,8 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface CategoryMapper {
+
+     @Mapping(target = "products", ignore = true)
      Category categoryToEntity(CategoryRequest request);
      CategoryResponse categoryToDto(Category category);
 

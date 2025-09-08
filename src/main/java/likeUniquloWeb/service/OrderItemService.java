@@ -23,8 +23,8 @@ public class OrderItemService {
     OrderItemMapper itemMapper;
 
     public OrderItemResponse createOrderItem(OrderItemRequest request){
-        OrderItems orderItems = itemMapper.itemToEntity(request);
-        return itemMapper.itemToDto(itemsRepository.save(orderItems));
+        OrderItems orderItem = itemMapper.itemToEntity(request);
+        return itemMapper.itemToDto(itemsRepository.save(orderItem));
     }
 
     public List<OrderItemResponse> getAllOrderItems(){

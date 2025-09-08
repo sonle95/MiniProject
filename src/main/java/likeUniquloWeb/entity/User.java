@@ -1,6 +1,7 @@
 package likeUniquloWeb.entity;
 
 import jakarta.persistence.*;
+import likeUniquloWeb.enums.Role;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,17 +16,30 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class User {
+public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
+    String firstName;
+    String lastName;
+
+    @Column(nullable = false, unique = true, length = 150)
     String username;
+    @Column(nullable = false)
     String password;
+    @Column(nullable = false, unique = true, length = 255)
+    String email;
+    @Column(length = 30)
     String phone;
+
+    boolean emailVerified;
+    boolean active;
+
     LocalDate createAt;
     LocalDate updateAt;
 
-    @Column(name = "is_admin")
+    @Column(name = "is_admin", nullable = false)
     boolean admin;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY ,cascade = CascadeType.ALL, orphanRemoval = true)
@@ -36,4 +50,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     Set<Order> orders;
+
+    @Enumerated(EnumType.STRING)
+    Role role;
 }

@@ -1,24 +1,18 @@
-package likeUniquloWeb.dto.response;
+package likeUniquloWeb.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class VariantResponse {
-    Long id;
-
-    String size;
-    String color;
-
-    BigDecimal price;
-
+public class UpdateVariantRequest
+{
+    @NotNull(message = "Variant ID is required")
+    Long variantId;
 }
