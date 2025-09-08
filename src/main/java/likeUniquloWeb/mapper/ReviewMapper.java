@@ -13,10 +13,22 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ReviewMapper {
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "product", ignore = true)
     Review toEntity(ReviewRequest request);
+
+    @Mapping(target = "userId", source = "user.id")
+    @Mapping(target = "userName", source = "user.username")
     ReviewResponse toDto(Review review);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "product", ignore = true)
     void updateReview(ReviewRequest request, @MappingTarget Review review);
 
 }

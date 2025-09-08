@@ -9,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -17,28 +18,27 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Product {
+public class Product extends BaseEntity  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
+    @Column(length = 100)
     String stockKeepingUnit;
+
+    @Column(nullable = false, length = 200)
     String name;
+
+    @Column(length = 1000)
     String description;
+
+    @Column(nullable = false, precision = 12, scale = 2)
     BigDecimal price;
-    boolean active;
-    LocalDate createAt;
-    LocalDate updateAt;
 
-    @PrePersist
-    protected void onCreate() {
-        createAt = LocalDate.now();
-        updateAt = LocalDate.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updateAt = LocalDate.now();
-    }
+    @Column(nullable = false)
+    boolean active = true;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "product",  cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     Set<ProductVariant> productVariants;

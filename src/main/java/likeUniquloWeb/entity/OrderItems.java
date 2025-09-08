@@ -14,12 +14,18 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class OrderItems {
+public class OrderItems extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
+    @Column(nullable = false)
     int quantity;
+
+    @Column(nullable = false, precision = 12, scale = 2)
     BigDecimal price;
+
+    Long productVariantId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")

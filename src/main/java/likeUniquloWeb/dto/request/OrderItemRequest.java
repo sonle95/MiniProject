@@ -1,21 +1,23 @@
 package likeUniquloWeb.dto.request;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
-
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderItemRequest {
 
+    @Positive(message = "Quantity must be positive")
+    @Max(value = 999, message = "Quantity cannot exceed 999")
     int quantity;
-    Long productId;
+    @NotNull(message = "Product variant ID is required")
     Long productVariantId;
+
 
 }

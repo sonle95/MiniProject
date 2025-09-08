@@ -12,7 +12,13 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StockResponse {
+
+
     int quantity;
+
+
     String warehouseCode;
     ProductVariant variant;
+
+
 }

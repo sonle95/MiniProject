@@ -9,4 +9,5 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ImageMapper {
     List<ImageResponse> imgToDto(List<Image> images);
+    List<Image> imgToEntity(List<ImageResponse> imageResponses);
 }

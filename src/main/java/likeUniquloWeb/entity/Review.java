@@ -8,20 +8,23 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Review {
+public class Review extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     int rating;
+
+    @Column(length = 1000)
     String comment;
-    LocalDate createAt;
-    LocalDate updateAt;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

@@ -22,6 +22,9 @@ public class CategoryService {
     CategoryMapper categoryMapper;
 
     public CategoryResponse createCategory(CategoryRequest request){
+        if(categoryRepository.existsByName(request.getName())){
+            throw new AppException(ErrorCode.NOT_FOUND);
+        }
         Category category = categoryMapper.categoryToEntity(request);
         return categoryMapper.categoryToDto(categoryRepository.save(category));
     }

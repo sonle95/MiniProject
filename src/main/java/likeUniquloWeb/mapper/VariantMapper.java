@@ -9,10 +9,15 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface VariantMapper {
-    @Mapping(target = "price", expression = "java(variant.getPrice())")
+
     VariantResponse toDto(ProductVariant variant);
+
+    @Mapping(target = "stocks", ignore = true)
+    @Mapping(target = "product", ignore = true)
     ProductVariant toEntity(VariantRequest request);
 
+    @Mapping(target = "stocks", ignore = true)
+    @Mapping(target = "product", ignore = true)
     @Mapping(target = "id", ignore = true)
     void updateVariant(VariantRequest request, @MappingTarget ProductVariant variant);
 

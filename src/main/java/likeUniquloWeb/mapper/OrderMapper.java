@@ -15,11 +15,13 @@ public interface OrderMapper {
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "coupon", ignore = true)
     @Mapping(target = "status", ignore = true)
-    @Mapping(target = "createAt", ignore = true)
-    @Mapping(target = "updateAt", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "totalAmount", ignore = true)
     @Mapping(target = "orderItems", source = "orderItems")
+    @Mapping(target = "orderNumber", ignore = true)
     Order orderToEntity(OrderRequest request);
+
 
     @Mapping(target = "orderItemResponses", source = "orderItems")
     OrderResponse orderToDto(Order order);
@@ -29,8 +31,8 @@ public interface OrderMapper {
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "coupon", ignore = true)
     @Mapping(target = "status", ignore = true)
-    @Mapping(target = "createAt", ignore = true)
-    @Mapping(target = "updateAt", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "totalAmount", ignore = true)
     @Mapping(target = "orderItems", ignore = true)
     void updateOrder(OrderRequest request, @MappingTarget Order order);

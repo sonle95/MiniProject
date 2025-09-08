@@ -1,6 +1,6 @@
 package likeUniquloWeb.dto.request;
 
-import likeUniquloWeb.entity.ProductVariant;
+import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +13,15 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StockRequest {
 
+
+    @PositiveOrZero(message = "Quantity cannot be negative")
+    @Max(value = 99999, message = "Quantity cannot exceed 99999")
     int quantity;
+
+    @NotBlank(message = "Warehouse code is required")
+    @Size(max = 20, message = "Warehouse code cannot exceed 20 characters")
     String warehouseCode;
-    ProductVariant variant;
+
+    @NotNull(message = "Product variant ID is required")
+    Long productVariantId;
 }
