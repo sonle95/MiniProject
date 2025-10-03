@@ -1,5 +1,5 @@
 package likeUniquloWeb.enums;
 
 public enum Role {
-    CUSTOMER, ADMIN, STAFF
+    USER, ADMIN, STAFF
 }

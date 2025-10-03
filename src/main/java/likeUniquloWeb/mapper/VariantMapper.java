@@ -7,18 +7,17 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {StockMapper.class})
 public interface VariantMapper {
 
+    @Mapping(target = "productId", source = "product.id")
+    @Mapping(target = "productName", source = "product.name")
     VariantResponse toDto(ProductVariant variant);
 
-    @Mapping(target = "stocks", ignore = true)
-    @Mapping(target = "product", ignore = true)
+    @Mapping(target = "stock.productVariant", ignore = true)
     ProductVariant toEntity(VariantRequest request);
 
-    @Mapping(target = "stocks", ignore = true)
-    @Mapping(target = "product", ignore = true)
-    @Mapping(target = "id", ignore = true)
+
     void updateVariant(VariantRequest request, @MappingTarget ProductVariant variant);
 
 }

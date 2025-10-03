@@ -10,6 +10,7 @@ import likeUniquloWeb.repository.ProductVariantRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,29 +23,39 @@ public class ProductVariantService {
     ProductVariantRepository variantRepository;
     VariantMapper variantMapper;
 
+//    @PreAuthorize("hasRole('ADMIN')")
     public VariantResponse createVariant(VariantRequest request){
+
         ProductVariant variant = variantMapper.toEntity(request);
+
         return variantMapper.toDto(variantRepository.save(variant));
     }
 
+//    @PreAuthorize("hasRole('ADMIN')")
     public List<VariantResponse> getAllVariants(){
         return variantRepository.findAll().stream().map(variantMapper::toDto).toList();
     }
 
+//    @PreAuthorize("hasRole('ADMIN')")
     public VariantResponse getById(Long id){
-        ProductVariant variant = variantRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.NOT_FOUND));
+        ProductVariant variant = variantRepository.findById(id)
+                .orElseThrow(()->new AppException(ErrorCode.VARIANT_NOT_FOUND));
         return variantMapper.toDto(variant);
     }
 
+//    @PreAuthorize("hasRole('ADMIN')")
     public void deleteById(Long id){
         if (!variantRepository.existsById(id)) {
-            throw new AppException(ErrorCode.NOT_FOUND);
+            throw new AppException(ErrorCode.VARIANT_NOT_FOUND);
         }
         variantRepository.deleteById(id);
     }
 
+//
+//    @PreAuthorize("hasRole('ADMIN')")
     public VariantResponse updateVariant(Long id, VariantRequest request){
-        ProductVariant variant = variantRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.NOT_FOUND));
+        ProductVariant variant = variantRepository.findById(id)
+                .orElseThrow(()->new AppException(ErrorCode.VARIANT_NOT_FOUND));
         variantMapper.updateVariant(request,variant);
         ProductVariant saved = variantRepository.save(variant);
         return variantMapper.toDto(saved);

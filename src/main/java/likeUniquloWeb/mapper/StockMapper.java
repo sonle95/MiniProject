@@ -11,10 +11,12 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface StockMapper {
 
+
     @Mapping(target = "lastUpdated", ignore = true)
     Stock toEntity(StockRequest request);
 
-    @Mapping(target = "variant", source = "productVariant")
+    @Mapping(target = "productVariantId", source = "productVariant.id")
+    @Mapping(target = "quantity", source = "quantity")
     StockResponse toDto(Stock stock);
     void update(StockRequest request, @MappingTarget Stock stock);
 

@@ -1,17 +1,16 @@
 package likeUniquloWeb.entity;
 
 import jakarta.persistence.*;
-import likeUniquloWeb.enums.Role;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -33,11 +32,12 @@ public class User extends BaseEntity {
     @Column(length = 30)
     String phone;
 
-    boolean emailVerified;
-    boolean active;
+    LocalDate dob;
 
-    LocalDate createAt;
-    LocalDate updateAt;
+    boolean emailVerified;
+
+    @Column(nullable = false)
+    boolean active = false;
 
     @Column(name = "is_admin", nullable = false)
     boolean admin;
@@ -51,6 +51,9 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     Set<Order> orders;
 
-    @Enumerated(EnumType.STRING)
-    Role role;
+    @ManyToMany
+    Set<Role> roles;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RefreshToken> refreshTokens = new ArrayList<>();
+
 }

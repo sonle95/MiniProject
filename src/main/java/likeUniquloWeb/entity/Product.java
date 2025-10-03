@@ -1,10 +1,7 @@
 package likeUniquloWeb.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
@@ -13,7 +10,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -35,10 +33,8 @@ public class Product extends BaseEntity  {
     @Column(nullable = false, precision = 12, scale = 2)
     BigDecimal price;
 
-    @Column(nullable = false)
-    boolean active = true;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
+    boolean active = false;
+
 
     @OneToMany(mappedBy = "product",  cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     Set<ProductVariant> productVariants;
@@ -52,9 +48,5 @@ public class Product extends BaseEntity  {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
     List<Image> images;
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    List<OrderItems> orderItems;
-
 
 }

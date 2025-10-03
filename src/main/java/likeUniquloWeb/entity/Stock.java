@@ -1,15 +1,13 @@
 package likeUniquloWeb.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -20,7 +18,7 @@ public class Stock extends BaseEntity {
     Long id;
 
     @Column(nullable = false)
-    int quantity;
+    Integer quantity;
 
     @Column(nullable = false, length = 20)
     String warehouseCode;
@@ -28,8 +26,8 @@ public class Stock extends BaseEntity {
     @Column(name = "last_updated")
     LocalDateTime lastUpdated;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "productVariant_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_variant_id")
     ProductVariant productVariant;
 
 

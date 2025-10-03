@@ -15,42 +15,32 @@ import java.util.List;
 @RequestMapping("/variants")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@CrossOrigin(origins = "*")
 public class VariantController {
     ProductVariantService variantService;
     @PostMapping
-    public ApiResponse<VariantResponse> create(@RequestBody VariantRequest request){
-        return ApiResponse.<VariantResponse>builder()
-                .result(variantService.createVariant(request))
-                .build();
+    public VariantResponse create(@RequestBody VariantRequest request){
+        return variantService.createVariant(request);
     }
 
     @GetMapping
-    public ApiResponse<List<VariantResponse>> getAll(){
-        return ApiResponse.<List<VariantResponse>>builder()
-                .result(variantService.getAllVariants())
-                .build();
+    public List<VariantResponse> getAll(){
+        return variantService.getAllVariants();
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<VariantResponse> getById(@PathVariable Long id){
-        return ApiResponse.<VariantResponse>builder()
-                .result(variantService.getById(id))
-                .build();
+    public VariantResponse getById(@PathVariable Long id){
+        return variantService.getById(id);
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<VariantResponse> update(@RequestBody VariantRequest request,
+    public VariantResponse update(@RequestBody VariantRequest request,
                                               @PathVariable Long id){
-        return ApiResponse.<VariantResponse>builder()
-                .result(variantService.updateVariant(id, request))
-                .build();
+        return variantService.updateVariant(id, request);
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> delete(@PathVariable Long id){
+    public void delete(@PathVariable Long id){
         variantService.deleteById(id);
-        return ApiResponse.<Void>builder()
-                .message("deleted")
-                .build();
     }
 }

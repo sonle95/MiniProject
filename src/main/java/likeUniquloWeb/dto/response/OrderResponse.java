@@ -3,17 +3,15 @@ package likeUniquloWeb.dto.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import likeUniquloWeb.enums.OrderStatus;
 import likeUniquloWeb.enums.PaymentStatus;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -24,7 +22,7 @@ public class OrderResponse {
     String orderNumber;
     BigDecimal totalAmount;
 
-    List<OrderItemResponse> orderItemResponses;
+    List<OrderItemResponse> orderItems;
     OrderStatus status;
 
     Long userId;
@@ -35,7 +33,7 @@ public class OrderResponse {
 
     String couponCode;
     BigDecimal discountAmount;
-
+    AddressResponse address;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime createdAt;
 

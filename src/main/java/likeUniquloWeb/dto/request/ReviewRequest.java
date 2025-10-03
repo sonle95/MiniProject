@@ -1,19 +1,15 @@
 package likeUniquloWeb.dto.request;
 
 import jakarta.validation.constraints.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ReviewRequest {
-
-
 
     @Min(value = 1, message = "Rating must be at least 1")
     @Max(value = 5, message = "Rating cannot exceed 5")
@@ -25,4 +21,7 @@ public class ReviewRequest {
 
     @NotNull(message = "user id is required")
     Long userId;
+
+    @NotNull(message = "product variant id is required")
+    Long productVariantId;
 }

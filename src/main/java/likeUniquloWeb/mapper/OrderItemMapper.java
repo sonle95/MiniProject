@@ -8,22 +8,16 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {VariantMapper.class})
 public interface OrderItemMapper {
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "product", ignore = true)
-    @Mapping(target = "order", ignore = true)
-    @Mapping(target = "price", ignore = true)
     OrderItems itemToEntity(OrderItemRequest request);
 
-    @Mapping(target = "productId", source = "product.id")
-    @Mapping(target = "productName", source = "product.name" )
+    @Mapping(target = "productName", source = "productVariant.product.name" )
+    @Mapping(target = "productVariantId", source = "productVariant.id")
     OrderItemResponse itemToDto(OrderItems orderItems);
 
-    @Mapping(target = "product", ignore = true)
-    @Mapping(target = "order", ignore = true)
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "price", ignore = true)
     void update(OrderItemRequest request, @MappingTarget OrderItems orderItems);
 
 
