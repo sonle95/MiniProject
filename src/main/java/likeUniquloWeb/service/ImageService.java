@@ -13,4 +13,8 @@ public interface ImageService {
 
     List<ImageResponse> upLoadProductImages(Long productId, List<MultipartFile> files)
         throws IOException;
+
+    List<ImageResponse> getAll();
+
+    void delete(Long id);
 }

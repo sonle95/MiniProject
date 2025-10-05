@@ -73,4 +73,11 @@ public class UserService {
         userRepository.delete(user);
     }
 
+    public UserResponse findUserById(Long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        return userMapper.toDto(user);
+    }
+
 }

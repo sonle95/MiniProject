@@ -19,18 +19,17 @@ public class SlideController {
     private final SlideService slideService;
 
     @PostMapping("/upload")
-    public ResponseEntity<List<SlideResponse>> uploadSlides(@RequestParam("files") List<MultipartFile> files) throws IOException {
-        return ResponseEntity.ok(slideService.uploadSlides(files));
+    public List<SlideResponse> uploadSlides(@RequestParam("files") List<MultipartFile> files) throws IOException {
+        return slideService.uploadSlides(files);
     }
 
     @GetMapping
-    public ResponseEntity<List<SlideResponse>> getAllSlides() {
-        return ResponseEntity.ok(slideService.getAllSlides());
+    public List<SlideResponse> getAllSlides() {
+        return slideService.getAllSlides();
     }
-//
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> delete(@PathVariable Long id) {
-//        slideService.deleteById(id);
-//        return ResponseEntity.noContent().build();
-//    }
+
+    @DeleteMapping("/show/{id}")
+    public void delete(@PathVariable Long id) {
+        slideService.deleteById(id);
+    }
 }

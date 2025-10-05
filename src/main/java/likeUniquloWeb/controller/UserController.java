@@ -2,7 +2,9 @@ package likeUniquloWeb.controller;
 
 import likeUniquloWeb.dto.request.UserRequest;
 import likeUniquloWeb.dto.request.UserUpdateRequest;
+import likeUniquloWeb.dto.response.AddressResponse;
 import likeUniquloWeb.dto.response.UserResponse;
+import likeUniquloWeb.service.AddressService;
 import likeUniquloWeb.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class UserController {
     UserService userService;
+    AddressService addressService;
 
     @PostMapping
     public UserResponse create(@RequestBody UserRequest request){
@@ -38,4 +41,13 @@ public class UserController {
     public void delete(@PathVariable Long userId){
         userService.delete(userId);
     }
+
+
+    @GetMapping("/{userId}")
+    public UserResponse findUserById(@PathVariable Long userId) {
+        return userService.findUserById(userId);
+    }
+
+
+
 }

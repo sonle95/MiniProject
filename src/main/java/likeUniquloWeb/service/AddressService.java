@@ -43,6 +43,11 @@ public class AddressService {
 
     }
 
+    public List<AddressResponse> getAddresses(){
+        return addressRepository.findAll()
+                .stream().map(addressMapper::toDto).toList();
+    }
+
     public List<AddressResponse> getMyAddresses(String token) {
         User user = authenticationService.getUserFromToken(token);
         return addressRepository.findByUser(user)
@@ -89,6 +94,15 @@ public class AddressService {
             throw new AppException(ErrorCode.FORBIDDEN);
         }
         addressRepository.delete(address);
+    }
+
+    public List<AddressResponse> getAddressesByUserId(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        return addressRepository.findByUser(user)
+                .stream()
+                .map(addressMapper::toDto)
+                .toList();
     }
 
 

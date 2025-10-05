@@ -27,4 +27,14 @@ public class ImageController {
             (@RequestParam Long productId, @RequestParam("files")List<MultipartFile> files) throws IOException {
         return imageService.upLoadProductImages(productId, files);
     }
+
+    @GetMapping
+    public List<ImageResponse> getAll(){
+        return imageService.getAll();
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id){
+        imageService.delete(id);
+    }
 }

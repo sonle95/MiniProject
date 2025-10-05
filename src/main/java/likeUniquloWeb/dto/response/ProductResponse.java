@@ -30,6 +30,7 @@ public class ProductResponse {
     String categoryName;
     List<VariantResponse> productVariants;
     List<String> urls ;
+    List<ImageResponse> images;
     List<ReviewResponse> reviews;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

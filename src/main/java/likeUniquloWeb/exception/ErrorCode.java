@@ -58,7 +58,8 @@ public enum ErrorCode {
     ADDRESS_EXISTED(1048, "address existed", HttpStatus.BAD_REQUEST),
     PASSWORD_NOT_MATCH(1049,"Password and confirm password do not match", HttpStatus.BAD_REQUEST ),
     INVALID_TOKEN(1050,"invalid token", HttpStatus.BAD_REQUEST),
-    FORBIDDEN(1051, "method is not allowed", HttpStatus.FORBIDDEN)
+    FORBIDDEN(1051, "method is not allowed", HttpStatus.FORBIDDEN),
+    QUANTITY_EXISTED(1052, "quantity is set already", HttpStatus.FORBIDDEN)
     ;
 
     ;

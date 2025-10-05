@@ -13,13 +13,17 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+
+
+@Slf4j
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
@@ -55,5 +59,28 @@ public class ImageServiceImpl implements ImageService {
 
         return imageMapper.imgToDto(imageRepository.saveAll(images));
 
+    }
+
+    @Override
+    public List<ImageResponse> getAll(){
+        return imageMapper.imgToDto(imageRepository.findAll());
+    }
+
+
+    @Override
+    public void delete(Long id) {
+        if (id == null) {
+            log.warn("Attempted to delete image with null ID");
+            return;
+        }
+
+        Optional<Image> image = imageRepository.findById(id);
+        if (image.isEmpty()) {
+            log.warn("Image with id {} not found", id);
+            return;
+        }
+
+
+        imageRepository.deleteById(id);
     }
 }

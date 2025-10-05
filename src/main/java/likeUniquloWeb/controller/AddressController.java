@@ -28,7 +28,11 @@ public class AddressController {
     { AddressResponse response = addressService.createAddress(request, token);
         return ResponseEntity.ok(response); }
 
-    @GetMapping("/me") public ResponseEntity<List<AddressResponse>> getMyAddresses( @RequestHeader("Authorization") String token )
+    @GetMapping
+    public List<AddressResponse> getAll(){
+        return addressService.getAddresses();
+    }
+    @GetMapping("/me/address") public ResponseEntity<List<AddressResponse>> getMyAddresses( @RequestHeader("Authorization") String token )
     { List<AddressResponse> responses = addressService.getMyAddresses(token);
         return ResponseEntity.ok(responses); }
     @GetMapping("/default")
@@ -46,4 +50,9 @@ public class AddressController {
     @DeleteMapping("/{id}") public ResponseEntity<Void> deleteAddress( @PathVariable("id") Long id, @RequestHeader("Authorization") String token )
     { addressService.delete(id, token);
         return ResponseEntity.noContent().build(); }
+
+    @GetMapping("/user/{userId}")
+    public List<AddressResponse> getAddressesByUserId(@PathVariable Long userId) {
+        return addressService.getAddressesByUserId(userId);
+    }
 }

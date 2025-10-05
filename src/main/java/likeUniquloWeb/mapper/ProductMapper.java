@@ -1,6 +1,7 @@
 package likeUniquloWeb.mapper;
 
 import likeUniquloWeb.dto.request.ProductRequest;
+import likeUniquloWeb.dto.request.ProductUpdateRequest;
 import likeUniquloWeb.dto.response.ProductResponse;
 import likeUniquloWeb.entity.Product;
 import likeUniquloWeb.entity.Image;
@@ -30,7 +31,7 @@ public interface ProductMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "images", ignore = true)
     @Mapping(target = "reviews", ignore = true)
-    void updateProduct(ProductRequest request, @MappingTarget Product product);
+    void updateProduct(ProductUpdateRequest request, @MappingTarget Product product);
 
     default List<String> mapImagesToUrls(List<Image> images) {
         if (images == null) return java.util.Collections.emptyList();

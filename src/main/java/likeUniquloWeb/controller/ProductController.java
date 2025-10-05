@@ -1,6 +1,7 @@
 package likeUniquloWeb.controller;
 
 import likeUniquloWeb.dto.request.ProductRequest;
+import likeUniquloWeb.dto.request.ProductUpdateRequest;
 import likeUniquloWeb.dto.response.ProductResponse;
 import likeUniquloWeb.service.ProductService;
 import lombok.AccessLevel;
@@ -63,10 +64,10 @@ public class ProductController {
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ProductResponse update(
             @PathVariable Long id,
-            @RequestPart("product") ProductRequest request,
+            @RequestPart("product") ProductUpdateRequest request,
             @RequestPart(value = "images", required = false) List<MultipartFile> images
     ) throws IOException {
-        request.setImages(images);
+        request.setNewImages(images);
         return service.updateProduct(request, id);
     }
 
