@@ -13,12 +13,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StockResponse {
 
-
+    Long id;
     int quantity;
-
-
     String warehouseCode;
-    ProductVariant variant;
-
+    Long productVariantId;
 
 }

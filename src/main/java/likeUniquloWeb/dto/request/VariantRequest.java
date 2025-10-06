@@ -1,15 +1,13 @@
 package likeUniquloWeb.dto.request;
 
 import jakarta.validation.constraints.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -25,9 +23,13 @@ public class VariantRequest {
     String color;
 
     @NotNull
+
     @DecimalMin(value = "0.01", message = "Price must be greater than 0")
     @Digits(integer = 10, fraction = 2, message = "Invalid price format")
     BigDecimal price;
+
+    StockRequest stock;
+
 
 
 }

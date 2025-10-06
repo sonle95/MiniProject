@@ -20,41 +20,32 @@ public class OrderItemController {
         OrderItemService itemService;
 
     @PostMapping
-    public ApiResponse<OrderItemResponse>
+    public OrderItemResponse
     create(@RequestBody OrderItemRequest request){
 
-        return ApiResponse.<OrderItemResponse>builder()
-                .result(itemService.createOrderItem(request))
-                .build();
+        return itemService.createOrderItem(request);
     }
 
     @GetMapping
-    public ApiResponse<List<OrderItemResponse>> getAll() {
-        return ApiResponse.<List<OrderItemResponse>>builder()
-                .result(itemService.getAllOrderItems())
-                .build();
+    public List<OrderItemResponse> getAll() {
+        return itemService.getAllOrderItems();
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<OrderItemResponse> getById(@PathVariable Long id){
-        return ApiResponse.<OrderItemResponse>builder()
-                .result(itemService.getById(id))
-                .build();
+    public OrderItemResponse getById(@PathVariable Long id){
+        return itemService.getById(id);
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<OrderItemResponse> update(@PathVariable Long id, @RequestBody OrderItemRequest itemRequest) throws IOException {
-        return ApiResponse.<OrderItemResponse>builder()
-                .result(itemService.updateOrderItem(id, itemRequest))
-                .build();
+    public OrderItemResponse update(@PathVariable Long id,
+                                                 @RequestBody OrderItemRequest itemRequest)
+            throws IOException {
+        return itemService.updateOrderItem(id, itemRequest);
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> delete(@PathVariable Long id){
+    public void delete(@PathVariable Long id){
         itemService.deleteById(id);
-        return ApiResponse.<Void>builder()
-                .message("Deleted!")
-                .build();
     }
 
 }

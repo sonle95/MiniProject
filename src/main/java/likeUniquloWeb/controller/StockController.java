@@ -1,14 +1,14 @@
 package likeUniquloWeb.controller;
 
-import likeUniquloWeb.dto.request.ReviewRequest;
 import likeUniquloWeb.dto.request.StockRequest;
 import likeUniquloWeb.dto.response.ApiResponse;
-import likeUniquloWeb.dto.response.ReviewResponse;
 import likeUniquloWeb.dto.response.StockResponse;
+import likeUniquloWeb.entity.Stock;
 import likeUniquloWeb.service.StockService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,45 +17,44 @@ import java.util.List;
 @RequestMapping("/stocks")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@CrossOrigin(origins = "*")
 public class StockController {
 
     StockService stockService;
 
 
     @PostMapping
-    public ApiResponse<StockResponse> create(@RequestBody StockRequest request){
-        return ApiResponse.<StockResponse>builder()
-                .result(stockService.createStock(request))
-                .build();
+    public StockResponse create(@RequestBody StockRequest request){
+        return stockService.createStock(request);
     }
 
     @GetMapping
-    public ApiResponse<List<StockResponse>> getAll(){
-        return ApiResponse.<List<StockResponse>>builder()
-                .result(stockService.getAll())
-                .build();
+    public List<StockResponse> getAll(){
+        return stockService.getAll();
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<StockResponse> getById(@PathVariable Long id){
-        return ApiResponse.<StockResponse>builder()
-                .result(stockService.getById(id))
-                .build();
+    public StockResponse getById(@PathVariable Long id){
+        return stockService.getById(id);
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<StockResponse> update(@RequestBody StockRequest request,
+    public StockResponse update(@RequestBody StockRequest request,
                                               @PathVariable Long id){
-        return ApiResponse.<StockResponse>builder()
-                .result(stockService.update(id, request))
-                .build();
+        return stockService.update(id, request);
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> delete(@PathVariable Long id){
+    public void delete(@PathVariable Long id){
         stockService.delete(id);
-        return ApiResponse.<Void>builder()
-                .message("deleted")
-                .build();
+    }
+
+    @GetMapping("/page")
+    public Page<StockResponse> getAllStocks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ) {
+        return stockService.getAllStocks(page, size, sortDir);
     }
 }

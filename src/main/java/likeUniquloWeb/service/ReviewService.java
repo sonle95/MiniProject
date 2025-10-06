@@ -2,14 +2,18 @@ package likeUniquloWeb.service;
 
 import likeUniquloWeb.dto.request.ReviewRequest;
 import likeUniquloWeb.dto.response.ReviewResponse;
+import likeUniquloWeb.entity.ProductVariant;
 import likeUniquloWeb.entity.Review;
+import likeUniquloWeb.entity.User;
+import likeUniquloWeb.enums.OrderStatus;
 import likeUniquloWeb.exception.AppException;
 import likeUniquloWeb.exception.ErrorCode;
 import likeUniquloWeb.mapper.ReviewMapper;
-import likeUniquloWeb.repository.ReviewRepository;
+import likeUniquloWeb.repository.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,30 +24,82 @@ import java.util.List;
 public class ReviewService {
     ReviewRepository reviewRepository;
     ReviewMapper reviewMapper;
+    UserRepository userRepository;
+    OrderRepository orderRepository;
+    ProductVariantRepository productVariantRepository;
+    AuthenticationService authenticationService;
 
-    public ReviewResponse createReview(ReviewRequest request){
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public ReviewResponse createReview(ReviewRequest request, String token){
+        User user = authenticationService.getUserFromToken(token);
+
+        if (reviewRepository.existsByUserIdAndProductVariantId(user.getId(), request.getProductVariantId())) {
+            throw new AppException(ErrorCode.REVIEW_ALREADY_EXISTS);
+        }
+        if (!orderRepository.existsByUser_IdAndOrderItems_ProductVariant_IdAndStatus(
+                user.getId(), request.getProductVariantId(), OrderStatus.DELIVERED)) {
+            throw new AppException(ErrorCode.REVIEW_WITHOUT_PURCHASE);
+        }
+
         Review review = reviewMapper.toEntity(request);
+
+        ProductVariant productVariant = productVariantRepository.findById(request.getProductVariantId())
+                .orElseThrow(()-> new AppException(ErrorCode.VARIANT_NOT_FOUND));
+        review.setProduct(productVariant.getProduct());
+
+
+
+        review.setUser(user);
         return reviewMapper.toDto(reviewRepository.save(review));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public List<ReviewResponse> getReviewByProduct(Long productId) {
+        List<Review> reviews = reviewRepository.findByProduct_Id(productId);
+        return reviews.stream()
+                .map(reviewMapper::toDto)
+                .toList();
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public List<ReviewResponse> getAllReviews(){
         return reviewRepository.findAll().stream().map(reviewMapper::toDto).toList();
     }
 
-    public ReviewResponse updateReview(Long id, ReviewRequest request){
-        Review review = reviewRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.NOT_FOUND));
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public ReviewResponse updateReview(Long id, ReviewRequest request, String token) {
+        User user = authenticationService.getUserFromToken(token);
+
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.REVIEW_NOT_FOUND));
+
+        if (!review.getUser().getId().equals(user.getId())) {
+            throw new AppException(ErrorCode.FORBIDDEN);
+        }
+
         reviewMapper.updateReview(request, review);
-        reviewRepository.save(review);
-        return reviewMapper.toDto(review);
+        return reviewMapper.toDto(reviewRepository.save(review));
     }
 
-    public void deleteReview(Long id){
-        Review review = reviewRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.NOT_FOUND));
-        reviewRepository.deleteById(id);
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public void deleteReview(Long id, String token){
+        User user = authenticationService.getUserFromToken(token);
+
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.REVIEW_NOT_FOUND));
+
+        if (!review.getUser().getId().equals(user.getId())) {
+            throw new AppException(ErrorCode.FORBIDDEN);
+        }
+        reviewRepository.delete(review);
 
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ReviewResponse getById(Long id){
-        Review review = reviewRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.NOT_FOUND));
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(()->new AppException(ErrorCode.REVIEW_NOT_FOUND));
         return reviewMapper.toDto(review);
     }
 

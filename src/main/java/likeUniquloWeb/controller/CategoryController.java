@@ -3,10 +3,12 @@ package likeUniquloWeb.controller;
 import likeUniquloWeb.dto.request.CategoryRequest;
 import likeUniquloWeb.dto.response.ApiResponse;
 import likeUniquloWeb.dto.response.CategoryResponse;
+import likeUniquloWeb.dto.response.ImageResponse;
 import likeUniquloWeb.service.CategoryService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,44 +17,44 @@ import java.util.List;
 @RequestMapping("/categories")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@CrossOrigin(origins = "*")
 public class CategoryController {
     CategoryService categoryService;
 
     @PostMapping
-    public ApiResponse<CategoryResponse> create(@RequestBody CategoryRequest request){
-        return ApiResponse.<CategoryResponse>builder()
-                .result(categoryService.createCategory(request))
-                .build();
+    public CategoryResponse create(@RequestBody CategoryRequest request){
+        return categoryService.createCategory(request);
     }
 
     @GetMapping
-    public ApiResponse<List<CategoryResponse>> getAll(){
-        return ApiResponse.<List<CategoryResponse>>builder()
-                .result(categoryService.getAllCategories())
-                .build();
+    public List<CategoryResponse> getAll(){
+        return categoryService.getAllCategories();
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<CategoryResponse> getById(@PathVariable Long id){
-        return ApiResponse.<CategoryResponse>builder()
-                .result(categoryService.getById(id))
-                .build();
+    public CategoryResponse getById(@PathVariable Long id){
+        return categoryService.getById(id);
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<CategoryResponse> update(@RequestBody CategoryRequest request,
+    public CategoryResponse update(@RequestBody CategoryRequest request,
                                                 @PathVariable Long id){
-        return ApiResponse.<CategoryResponse>builder()
-                .result(categoryService.updateCategory(request, id))
-                .build();
+        return categoryService.updateCategory(request, id);
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> delete(@PathVariable Long id){
+    public void delete(@PathVariable Long id){
         categoryService.deleteById(id);
-        return ApiResponse.<Void>builder()
-                .message("deleted")
-                .build();
     }
 
+
+    @GetMapping("/page")
+    public Page<CategoryResponse> getCategoriesByPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size,
+            @RequestParam(defaultValue = "desc") String sortDir,
+            @RequestParam(defaultValue = "") String keySearch
+    ) {
+        return categoryService.getCategoriesByPage(page, size, sortDir, keySearch);
+    }
 }

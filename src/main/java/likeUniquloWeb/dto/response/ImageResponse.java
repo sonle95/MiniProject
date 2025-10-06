@@ -14,4 +14,7 @@ public class ImageResponse {
     Long id;
     String url;
     String altText;
+    String fileName;
+    String productName;
+    Long productId;
 }

@@ -4,7 +4,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/project?createDatabaseIfNotExist=true
     username: root
-    password: Yeuem@95
+    password: 1234567
   jpa:
     show-sql: true
     hibernate:
@@ -14,5 +14,48 @@ spring:
         format_sql: true
   file:
     upload-dir=src/main/resources/static/uploads/:
+      servlet:
+        multipart:
+          max-file-size: 10MB
+          max-request-size: 20MB
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: sonvan012@gmail.com
+    password: ubpq rkhf pefi whbp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 server:
   port: 8080
+
+app:
+  upload:
+    dir: C:/Users/ADMIN/Desktop/likeUniWebImages
+
+
+jwt:
+  signer:
+    key: "EqkXCDwlLKcRHy+V4+TSXkMnvw6wwFfe4elR4rDha06b6bUwCZeZTfpRka/rA5er"
+  expiration:
+    hours: 1
+  issuer: sss.com
+  refresh-token:
+    expiration:
+      days: 30
+    issuer: sss.com
+logging:
+  level:
+    simpleSecurity: INFO
+    org.springframework.security: DEBUG
+  file:
+    name: logs/security.log
+
+security:
+  bcrypt:
+    strength: ${BCRYPT_STRENGTH:10}
+
+

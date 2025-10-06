@@ -22,9 +22,8 @@ public class OrderItemResponse {
 
     BigDecimal price;
 
-    Long productId;
-
     Long productVariantId;
+
     String productName;
 
 

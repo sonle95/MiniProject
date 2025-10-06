@@ -16,12 +16,13 @@ public class StockRequest {
 
     @PositiveOrZero(message = "Quantity cannot be negative")
     @Max(value = 99999, message = "Quantity cannot exceed 99999")
-    int quantity;
+    Integer quantity;
+
 
     @NotBlank(message = "Warehouse code is required")
     @Size(max = 20, message = "Warehouse code cannot exceed 20 characters")
     String warehouseCode;
 
-    @NotNull(message = "Product variant ID is required")
+
     Long productVariantId;
 }

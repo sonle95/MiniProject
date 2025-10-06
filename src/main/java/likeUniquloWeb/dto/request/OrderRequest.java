@@ -8,16 +8,13 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderRequest {
-
-
-    @NotNull(message = "userId is required")
-    Long userId;
 
     String paymentMethod;
 
@@ -25,5 +22,8 @@ public class OrderRequest {
     @NotEmpty(message = "order items can not be empty")
     @Valid
     List<OrderItemRequest> orderItems;
+
+    @NotNull(message = "addressId is required for order placement")
+    Long addressId;
 
 }

@@ -6,11 +6,9 @@ import likeUniquloWeb.service.ImageService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -20,15 +18,35 @@ import java.util.List;
 @RequestMapping("/images")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@CrossOrigin(origins = "*")
 public class ImageController {
 
     ImageService imageService;
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ApiResponse<List<ImageResponse>> uploadProductImages
+    public List<ImageResponse> uploadProductImages
             (@RequestParam Long productId, @RequestParam("files")List<MultipartFile> files) throws IOException {
-        return ApiResponse.<List<ImageResponse>>builder()
-                .result(imageService.upLoadProductImages(productId, files))
-                .build();
+        return imageService.upLoadProductImages(productId, files);
     }
+
+    @GetMapping
+    public List<ImageResponse> getAll(){
+        return imageService.getAll();
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id){
+        imageService.delete(id);
+    }
+
+    @GetMapping("/page")
+    public Page<ImageResponse> getImagesByPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size,
+            @RequestParam(defaultValue = "desc") String sortDir,
+            @RequestParam(defaultValue = "") String keySearch
+    ) {
+        return imageService.getImagesByPage(page, size, sortDir, keySearch);
+    }
+
 }

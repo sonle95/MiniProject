@@ -24,12 +24,12 @@ public class FileUploadUtil {
         for (MultipartFile file : files) {
             if(file.isEmpty())  continue;
             String originalFileName = file.getOriginalFilename();
-            String fileName = System.currentTimeMillis() + "_" + originalFileName;
-
+            String cleanFileName = originalFileName.replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
+            String fileName = System.currentTimeMillis() + "_" + cleanFileName;
             Path filePath = uploadPath.resolve(fileName);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            filePaths.add("/uploads/" + fileName);
+            filePaths.add(fileName);
         }
         return  filePaths;
     }

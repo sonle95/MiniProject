@@ -6,7 +6,8 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -18,13 +19,17 @@ public class CartItem extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_id")
     private Cart cart;
 
     @ManyToOne
     private Product product;
 
-    private Long productVariantId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_variant_id", nullable = false)
+    private ProductVariant productVariant;
+
     private int quantity;
     private BigDecimal price;
 }
