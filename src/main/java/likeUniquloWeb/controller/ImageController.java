@@ -6,6 +6,7 @@ import likeUniquloWeb.service.ImageService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,4 +38,15 @@ public class ImageController {
     public void delete(@PathVariable Long id){
         imageService.delete(id);
     }
+
+    @GetMapping("/page")
+    public Page<ImageResponse> getImagesByPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size,
+            @RequestParam(defaultValue = "desc") String sortDir,
+            @RequestParam(defaultValue = "") String keySearch
+    ) {
+        return imageService.getImagesByPage(page, size, sortDir, keySearch);
+    }
+
 }

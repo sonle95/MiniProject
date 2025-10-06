@@ -156,7 +156,10 @@ public class ProductService {
 
         List<ImageResponse> imageResponses = product.getImages().stream()
                 .map(img ->
-                        new ImageResponse(img.getId(), img.getUrl(), img.getFileName(), img.getAltText())).toList()
+                        new ImageResponse(img.getId(), img.getUrl(),
+                                img.getFileName(), img.getAltText(),
+                                img.getProduct().getName(),
+                                img.getProduct().getId())).toList()
                         ;
 
         response.setImages(imageResponses);

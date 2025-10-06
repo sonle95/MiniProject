@@ -10,6 +10,10 @@ import likeUniquloWeb.repository.CategoryRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -61,4 +65,20 @@ public class CategoryService {
         categoryRepository.deleteById(id);
     }
 
+
+    public Page<CategoryResponse> getCategoriesByPage(int page, int size, String sortDir, String keySearch){
+        Sort sort = sortDir.equalsIgnoreCase("asc")
+                ? Sort.by("id").ascending()
+                : Sort.by("id").descending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Category> categories;
+        if(keySearch == null || keySearch.trim().isEmpty()){
+            categories = categoryRepository.findAll(pageable);
+        }else {
+            categories = categoryRepository.searchByName(keySearch.trim(), pageable);
+        }
+        return categories.map(categoryMapper::categoryToDto);
+    }
 }

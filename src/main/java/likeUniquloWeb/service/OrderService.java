@@ -22,9 +22,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -44,7 +41,6 @@ public class OrderService {
     ProductVariantRepository variantRepository;
     StockRepository stockRepository;
     OrderItemsRepository itemsRepository;
-    UserRepository userRepository;
     AddressRepository addressRepository;
     AuthenticationService authenticationService;
 
@@ -384,5 +380,6 @@ public class OrderService {
         Page<Order> orders = orderRepository.findAll(pageable);
         return orders.map(orderMapper::orderToDto);
     }
+
 
 }

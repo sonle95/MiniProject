@@ -15,6 +15,10 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -65,6 +69,26 @@ public class ImageServiceImpl implements ImageService {
     public List<ImageResponse> getAll(){
         return imageMapper.imgToDto(imageRepository.findAll());
     }
+
+
+    @Override
+    public Page<ImageResponse> getImagesByPage(int page, int size, String sortDir, String keySearch) {
+        Sort sort = sortDir.equalsIgnoreCase("asc")
+                ? Sort.by("id").ascending()
+                : Sort.by("id").descending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Image> images;
+        if (keySearch == null || keySearch.trim().isEmpty()) {
+            images = imageRepository.findAll(pageable);
+        } else {
+            images = imageRepository.searchImagesByProductNameOrId(keySearch.trim(), pageable);
+        }
+
+        return images.map(imageMapper::imageToDto);
+    }
+
 
 
     @Override
