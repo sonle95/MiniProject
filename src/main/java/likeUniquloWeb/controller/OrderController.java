@@ -6,6 +6,7 @@ import likeUniquloWeb.dto.request.PaymentUpdateRequest;
 import likeUniquloWeb.dto.request.StatusUpdateRequest;
 import likeUniquloWeb.dto.response.ApiResponse;
 import likeUniquloWeb.dto.response.OrderResponse;
+import likeUniquloWeb.dto.response.StockResponse;
 import likeUniquloWeb.enums.OrderStatus;
 import likeUniquloWeb.exception.AppException;
 import likeUniquloWeb.exception.ErrorCode;
@@ -13,6 +14,7 @@ import likeUniquloWeb.service.OrderService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -77,6 +79,14 @@ public class OrderController {
         return orderService.updatePaymentStatus(orderId, request.getPaymentStatus());
     }
 
+    @GetMapping("/page")
+    public Page<OrderResponse> geOrdersByPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ) {
+        return orderService.getOrdersByPage(page, size, sortDir);
+    }
 }
 
 

@@ -1,7 +1,9 @@
 package likeUniquloWeb.service;
 
 import likeUniquloWeb.dto.request.VariantRequest;
+import likeUniquloWeb.dto.response.OrderResponse;
 import likeUniquloWeb.dto.response.VariantResponse;
+import likeUniquloWeb.entity.Order;
 import likeUniquloWeb.entity.ProductVariant;
 import likeUniquloWeb.exception.AppException;
 import likeUniquloWeb.exception.ErrorCode;
@@ -10,6 +12,10 @@ import likeUniquloWeb.repository.ProductVariantRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -60,6 +66,15 @@ public class ProductVariantService {
         ProductVariant saved = variantRepository.save(variant);
         return variantMapper.toDto(saved);
     }
+
+    public Page<VariantResponse> getVariantsByPage(int page, int size, String sortDir){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProductVariant> productVariants = sortDir.equalsIgnoreCase("asc")
+                ? variantRepository.findAllOrderByStockQuantityAsc(pageable)
+                : variantRepository.findAllOrderByStockQuantityDesc(pageable);
+        return productVariants.map(variantMapper::toDto);
+    }
+
 
 
 }

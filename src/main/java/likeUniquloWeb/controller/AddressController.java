@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,5 +55,14 @@ public class AddressController {
     @GetMapping("/user/{userId}")
     public List<AddressResponse> getAddressesByUserId(@PathVariable Long userId) {
         return addressService.getAddressesByUserId(userId);
+    }
+    @GetMapping("/page")
+    public Page<AddressResponse> getAddressesByPageAndSearch(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size,
+            @RequestParam(defaultValue = "") String keySearch,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ) {
+        return addressService.getAddressesByPageAndSearch(page, size, keySearch, sortDir);
     }
 }

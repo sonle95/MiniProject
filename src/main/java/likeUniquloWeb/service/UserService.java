@@ -16,6 +16,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -78,6 +82,23 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         return userMapper.toDto(user);
+    }
+
+    public Page<UserResponse> getUsersByPageAndSearch(int page, int size, String keySearch, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase("asc")
+                ? Sort.by("id").ascending()
+                : Sort.by("id").descending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<User> users;
+        if (keySearch == null || keySearch.trim().isEmpty()) {
+            users = userRepository.findAll(pageable);
+        } else {
+            users = userRepository.searchByUserName(keySearch.trim(), pageable);
+        }
+
+        return users.map(userMapper::toDto);
     }
 
 }

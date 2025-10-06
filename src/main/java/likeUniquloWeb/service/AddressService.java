@@ -14,6 +14,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -103,6 +107,23 @@ public class AddressService {
                 .stream()
                 .map(addressMapper::toDto)
                 .toList();
+    }
+
+    public Page<AddressResponse> getAddressesByPageAndSearch(int page, int size, String keySearch, String sortDir){
+        Sort sort = sortDir.equalsIgnoreCase("asc")
+                ? Sort.by("id").ascending()
+                : Sort.by("id").descending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Address> addresses;
+        if (keySearch == null || keySearch.trim().isEmpty()) {
+            addresses = addressRepository.findAll(pageable);
+        } else {
+            addresses = addressRepository.searchByUserKeyword(keySearch.trim(), pageable);
+        }
+
+        return addresses.map(addressMapper::toDto);
     }
 
 

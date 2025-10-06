@@ -40,7 +40,6 @@ public class SlideServiceImpl implements SlideService{
 
         List<Slide> slides = filePaths.stream().map(path -> {
             Slide slide = new Slide();
-//            slide.setImgUrl(path.replace("/uploads/", "/slides/"));
             slide.setImgUrl("/slides/" + path);
             slide.setActive(true);
             return slide;

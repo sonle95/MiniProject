@@ -12,8 +12,13 @@ import likeUniquloWeb.repository.StockRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -72,5 +77,15 @@ public class StockService {
 //    @PreAuthorize("hasRole('ADMIN')")
     public void delete(Long id){
         stockRepository.deleteById(id);
+    }
+
+    public Page<StockResponse> getAllStocks(int page, int size, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase("asc")
+                ? Sort.by("quantity").ascending()
+                : Sort.by("quantity").descending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Stock> stocks = stockRepository.findAll(pageable);
+        return stocks.map(stockMapper::toDto);
     }
 }

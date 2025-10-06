@@ -19,6 +19,8 @@ public class AddressResponse {
     String phone;
     String firstName;
     String lastName;
+    String username;
+    String email;
     boolean addressDefault = false;
 
 }

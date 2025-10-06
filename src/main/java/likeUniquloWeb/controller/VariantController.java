@@ -2,11 +2,13 @@ package likeUniquloWeb.controller;
 
 import likeUniquloWeb.dto.request.VariantRequest;
 import likeUniquloWeb.dto.response.ApiResponse;
+import likeUniquloWeb.dto.response.StockResponse;
 import likeUniquloWeb.dto.response.VariantResponse;
 import likeUniquloWeb.service.ProductVariantService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,5 +44,14 @@ public class VariantController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id){
         variantService.deleteById(id);
+    }
+
+    @GetMapping("/page")
+    public Page<VariantResponse> getVariantsByPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ) {
+        return variantService.getVariantsByPage(page, size, sortDir);
     }
 }

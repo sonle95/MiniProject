@@ -3,10 +3,12 @@ package likeUniquloWeb.controller;
 import likeUniquloWeb.dto.request.StockRequest;
 import likeUniquloWeb.dto.response.ApiResponse;
 import likeUniquloWeb.dto.response.StockResponse;
+import likeUniquloWeb.entity.Stock;
 import likeUniquloWeb.service.StockService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,5 +47,14 @@ public class StockController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id){
         stockService.delete(id);
+    }
+
+    @GetMapping("/page")
+    public Page<StockResponse> getAllStocks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ) {
+        return stockService.getAllStocks(page, size, sortDir);
     }
 }

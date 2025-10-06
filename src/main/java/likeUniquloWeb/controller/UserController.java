@@ -9,6 +9,7 @@ import likeUniquloWeb.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,6 +49,14 @@ public class UserController {
         return userService.findUserById(userId);
     }
 
-
+    @GetMapping("/page")
+    public Page<UserResponse> getUsersByPageAndSearch(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size,
+            @RequestParam(defaultValue = "") String keySearch,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ) {
+        return userService.getUsersByPageAndSearch(page, size, keySearch, sortDir);
+    }
 
 }

@@ -15,6 +15,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -369,6 +373,16 @@ public class OrderService {
         order.setUpdatedAt(LocalDateTime.now());
 
         return orderMapper.orderToDto(orderRepository.save(order));
+    }
+
+    public Page<OrderResponse> getOrdersByPage(int page, int size, String sortDir){
+        Sort sort = sortDir.equalsIgnoreCase("asc")
+                ? Sort.by("createdAt").ascending().and(Sort.by("id").ascending())
+                : Sort.by("createdAt").descending().and(Sort.by("id").descending());
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Order> orders = orderRepository.findAll(pageable);
+        return orders.map(orderMapper::orderToDto);
     }
 
 }
