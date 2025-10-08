@@ -57,4 +57,9 @@ public class CategoryController {
     ) {
         return categoryService.getCategoriesByPage(page, size, sortDir, keySearch);
     }
+
+    @GetMapping("/{id}/available-images")
+    public List<String> getAvailableImages(@PathVariable Long id) {
+        return categoryService.getAvailableImagesForCategory(id);
+    }
 }

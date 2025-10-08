@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -57,6 +58,16 @@ public class UserController {
             @RequestParam(defaultValue = "desc") String sortDir
     ) {
         return userService.getUsersByPageAndSearch(page, size, keySearch, sortDir);
+    }
+
+    @GetMapping("/myInfo")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public UserResponse getMyInfo(
+            @RequestHeader("Authorization") String token
+    ) {
+        String actualToken = token.replace("Bearer ", "");
+        UserResponse response = userService.getMyInfo(actualToken);
+        return response;
     }
 
 }

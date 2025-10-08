@@ -55,6 +55,7 @@ public class ReviewController {
             @RequestBody ReviewRequest request,
             @RequestHeader("Authorization") String token
     ) {
+        String actualToken = token.replace("Bearer ", "");
         ReviewResponse response = reviewService.updateReview(id, request, token);
         return ResponseEntity.ok(response);
     }
@@ -64,6 +65,7 @@ public class ReviewController {
             @PathVariable Long id,
             @RequestHeader("Authorization") String token
     ) {
+        String actualToken = token.replace("Bearer ", "");
         reviewService.deleteReview(id, token);
         return ResponseEntity.noContent().build();
     }

@@ -32,4 +32,14 @@ public class Review extends BaseEntity {
     @JoinColumn(name = "product_id")
     Product product;
 
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }

@@ -16,6 +16,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -33,26 +34,25 @@ public class ReviewService {
     public ReviewResponse createReview(ReviewRequest request, String token){
         User user = authenticationService.getUserFromToken(token);
 
-        if (reviewRepository.existsByUserIdAndProductVariantId(user.getId(), request.getProductVariantId())) {
+        // Lấy product từ variant
+        ProductVariant productVariant = productVariantRepository.findById(request.getProductVariantId())
+                .orElseThrow(()-> new AppException(ErrorCode.VARIANT_NOT_FOUND));
+
+        // Check theo PRODUCT thay vì VARIANT
+        if (reviewRepository.existsByUser_IdAndProduct_Id(user.getId(), productVariant.getProduct().getId())) {
             throw new AppException(ErrorCode.REVIEW_ALREADY_EXISTS);
         }
+
         if (!orderRepository.existsByUser_IdAndOrderItems_ProductVariant_IdAndStatus(
                 user.getId(), request.getProductVariantId(), OrderStatus.DELIVERED)) {
             throw new AppException(ErrorCode.REVIEW_WITHOUT_PURCHASE);
         }
 
         Review review = reviewMapper.toEntity(request);
-
-        ProductVariant productVariant = productVariantRepository.findById(request.getProductVariantId())
-                .orElseThrow(()-> new AppException(ErrorCode.VARIANT_NOT_FOUND));
         review.setProduct(productVariant.getProduct());
-
-
-
         review.setUser(user);
         return reviewMapper.toDto(reviewRepository.save(review));
     }
-
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public List<ReviewResponse> getReviewByProduct(Long productId) {
         List<Review> reviews = reviewRepository.findByProduct_Id(productId);

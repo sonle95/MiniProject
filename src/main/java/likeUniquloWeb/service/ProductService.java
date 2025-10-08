@@ -293,4 +293,13 @@ public class ProductService {
         Page<Product> products = repository.searchByNameAndCategory(keyword, category, pageable);
         return products.map(mapper::toDto);
     }
+
+    public Page<ProductResponse> searchAndGetProductsByPage(String keyword, Pageable pageable){
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return repository.findAll(pageable).map(mapper::toDto);
+        }
+        Page<Product> products = repository.searchByName(keyword, pageable);
+        return products.map(mapper::toDto);
+    }
 }

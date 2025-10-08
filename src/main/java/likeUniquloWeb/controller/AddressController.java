@@ -33,7 +33,7 @@ public class AddressController {
     public List<AddressResponse> getAll(){
         return addressService.getAddresses();
     }
-    @GetMapping("/me/address") public ResponseEntity<List<AddressResponse>> getMyAddresses( @RequestHeader("Authorization") String token )
+    @GetMapping("/me") public ResponseEntity<List<AddressResponse>> getMyAddresses( @RequestHeader("Authorization") String token )
     { List<AddressResponse> responses = addressService.getMyAddresses(token);
         return ResponseEntity.ok(responses); }
     @GetMapping("/default")
@@ -45,7 +45,7 @@ public class AddressController {
     }
     @PutMapping("/{id}") public ResponseEntity<AddressResponse> updateAddress( @PathVariable("id") Long id, @RequestBody AddressRequest request,
                                                                                @RequestHeader("Authorization") String token )
-    { AddressResponse response = addressService.update(id, request, token);
+    { AddressResponse response = addressService.updateAddress(id, request, token);
         return ResponseEntity.ok(response); }
 
     @DeleteMapping("/{id}") public ResponseEntity<Void> deleteAddress( @PathVariable("id") Long id, @RequestHeader("Authorization") String token )

@@ -21,6 +21,6 @@ public class AddressResponse {
     String lastName;
     String username;
     String email;
-    boolean addressDefault = false;
+    Boolean addressDefault = false;
 
 }
