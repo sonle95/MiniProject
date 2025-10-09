@@ -37,6 +37,7 @@ public class UserService {
     PasswordEncoder passwordEncoder;
     RoleRepository roleRepository;
     RefreshTokenRepository refreshTokenRepository;
+    AuthenticationService authenticationService;
 
 //    @PreAuthorize("hasRole('USER')")
     public UserResponse createUser(UserRequest request){
@@ -99,6 +100,11 @@ public class UserService {
         }
 
         return users.map(userMapper::toDto);
+    }
+
+    public UserResponse getMyInfo(String token) {
+        User user = authenticationService.getUserFromToken(token);
+        return userMapper.toDto(user);
     }
 
 }

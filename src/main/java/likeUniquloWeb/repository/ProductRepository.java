@@ -21,4 +21,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> searchByNameAndCategory(@Param("keyword") String keyword,
                                           @Param("category") String category,
                                           Pageable pageable);
+
+
 }

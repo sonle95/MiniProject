@@ -86,4 +86,11 @@ public class ProductController {
         return result;
     }
 
+    @GetMapping("/pageable")
+    public Page<ProductResponse> getAndSearchProduct(
+            @RequestParam(required = false) String keyword,
+            @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable){
+        return service.searchAndGetProductsByPage(keyword, pageable);
+    }
+
 }

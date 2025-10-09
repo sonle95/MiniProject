@@ -12,12 +12,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
-  file:
-    upload-dir=src/main/resources/static/uploads/:
-      servlet:
-        multipart:
-          max-file-size: 10MB
-          max-request-size: 20MB
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
   mail:
     host: smtp.gmail.com
     port: 587
@@ -29,13 +27,13 @@ spring:
           auth: true
           starttls:
             enable: true
+
 server:
   port: 8080
 
 app:
   upload:
     dir: C:/Users/ADMIN/Desktop/likeUniWebImages
-
 
 jwt:
   signer:
@@ -47,6 +45,7 @@ jwt:
     expiration:
       days: 30
     issuer: sss.com
+
 logging:
   level:
     simpleSecurity: INFO
@@ -58,4 +57,11 @@ security:
   bcrypt:
     strength: ${BCRYPT_STRENGTH:10}
 
-
+vnpay:
+  tmn-code: WZ7XOQTE
+  hash-secret: LP7EN7A1HP07QT3NDPAVA2M1AIKT2OX2
+  url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+  return-url: http://localhost:3000/payment/callback
+  version: 2.1.0
+  command: pay
+  order-type: other

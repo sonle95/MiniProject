@@ -35,7 +35,11 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
     """)
     Page<Address> searchByUserKeyword(@Param("keySearch") String keySearch, Pageable pageable);
 
+    List<Address> findByUser_Id(Long userId);
 
+    List<Address> findByUser_IdAndAddressDefaultTrue(Long userId);
+
+    long countByUser_Id(Long userId);
 
 
 }

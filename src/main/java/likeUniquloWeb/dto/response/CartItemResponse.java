@@ -22,5 +22,6 @@ public class CartItemResponse {
     int quantity;
     BigDecimal unitPrice;
     BigDecimal totalPrice;
+    String imageUrl;
 
 }

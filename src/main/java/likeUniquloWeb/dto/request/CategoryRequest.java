@@ -18,4 +18,7 @@ public class CategoryRequest {
     String name;
     @Size(max = 500, message = "Description cannot exceed 500 characters")
     String description;
+
+    @Size(max = 500, message = "Image URL must not exceed 500 characters")
+    String imageUrl;
 }

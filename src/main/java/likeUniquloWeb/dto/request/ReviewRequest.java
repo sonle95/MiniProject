@@ -19,9 +19,5 @@ public class ReviewRequest {
     @Size(min = 10, max = 500, message = "Comment must be between 10 and 500 characters")
     String comment;
 
-    @NotNull(message = "user id is required")
-    Long userId;
-
-    @NotNull(message = "product variant id is required")
     Long productVariantId;
 }

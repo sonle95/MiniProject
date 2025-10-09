@@ -59,7 +59,9 @@ public enum ErrorCode {
     PASSWORD_NOT_MATCH(1049,"Password and confirm password do not match", HttpStatus.BAD_REQUEST ),
     INVALID_TOKEN(1050,"invalid token", HttpStatus.BAD_REQUEST),
     FORBIDDEN(1051, "method is not allowed", HttpStatus.FORBIDDEN),
-    QUANTITY_EXISTED(1052, "quantity is set already", HttpStatus.FORBIDDEN)
+    QUANTITY_EXISTED(1052, "quantity is set already", HttpStatus.FORBIDDEN),
+    ADDRESS_LIMIT_EXCEEDED(1053,"each user must not have more than three addresses", HttpStatus.FORBIDDEN)
+    ,CATEGORY_HAS_PRODUCTS(1054,"category has products", HttpStatus.FORBIDDEN)
     ;
 
     ;

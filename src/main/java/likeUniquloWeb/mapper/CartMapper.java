@@ -20,7 +20,16 @@ public interface CartMapper {
     @Mapping(target = "size", source = "productVariant.size")
     @Mapping(target = "productVariantId", source = "productVariant.id")
     @Mapping(target = "totalPrice", expression = "java(cartItem.getPrice().multiply(new java.math.BigDecimal(cartItem.getQuantity())))")
+    @Mapping(target = "imageUrl", expression = "java(getFirstImageUrl(cartItem))")
     CartItemResponse toCartItemDto(CartItem cartItem);
 
-
+    default String getFirstImageUrl(CartItem cartItem) {
+        if (cartItem.getProductVariant() != null
+                && cartItem.getProductVariant().getProduct() != null
+                && cartItem.getProductVariant().getProduct().getImages() != null
+                && !cartItem.getProductVariant().getProduct().getImages().isEmpty()) {
+            return cartItem.getProductVariant().getProduct().getImages().get(0).getUrl();
+        }
+        return null;
+    }
 }

@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,19 +33,29 @@ public class AddressService {
     AddressMapper addressMapper;
     UserRepository userRepository;
     AuthenticationService authenticationService;
-
+    private static final int MAX_ADDRESSES_PER_USER = 3;
     @Transactional
-    public AddressResponse createAddress(AddressRequest request, String token){
-        Address address = addressMapper.toEntity(request);
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public AddressResponse createAddress(AddressRequest request, String token) {
         User user = authenticationService.getUserFromToken(token);
-        address.setUser(user);
-        if (request.isAddressDefault()) {
-            addressRepository.clearDefaultAddress(user, null);
-            address.setAddressDefault(true);
-        }
-        Address savedAddress = addressRepository.save(address);
-       return addressMapper.toDto(savedAddress);
 
+        long addressCount = addressRepository.countByUser_Id(user.getId());
+        if (addressCount >= MAX_ADDRESSES_PER_USER) {
+            throw new AppException(ErrorCode.ADDRESS_LIMIT_EXCEEDED);
+        }
+
+        Address address = addressMapper.toEntity(request);
+        address.setUser(user);
+
+        if (Boolean.TRUE.equals(request.isAddressDefault())) {
+            addressRepository.findByUser_IdAndAddressDefaultTrue(user.getId())
+                    .forEach(addr -> {
+                        addr.setAddressDefault(false);
+                        addressRepository.save(addr);
+                    });
+        }
+
+        return addressMapper.toDto(addressRepository.save(address));
     }
 
     public List<AddressResponse> getAddresses(){
@@ -54,6 +65,12 @@ public class AddressService {
 
     public List<AddressResponse> getMyAddresses(String token) {
         User user = authenticationService.getUserFromToken(token);
+        List<Address> addresses = addressRepository.findByUser(user);
+        addresses.sort((a1, a2) -> {
+            if (Boolean.TRUE.equals(a1.isAddressDefault())) return -1;
+            if (Boolean.TRUE.equals(a2.isAddressDefault())) return 1;
+            return 0;
+        });
         return addressRepository.findByUser(user)
                 .stream().map(addressMapper::toDto).toList();
     }
@@ -67,28 +84,31 @@ public class AddressService {
     }
 
     @Transactional
-    public AddressResponse update(Long addressId, AddressRequest request, String token){
-        Address address = addressRepository.findById(addressId)
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public AddressResponse updateAddress(Long id, AddressRequest request, String token) {
+        User user = authenticationService.getUserFromToken(token);
+
+        Address address = addressRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
-        User currentUser = authenticationService.getUserFromToken(token);
-        if (!address.getUser().getId().equals(currentUser.getId())) {
+        if (!address.getUser().getId().equals(user.getId())) {
             throw new AppException(ErrorCode.FORBIDDEN);
         }
-        address.setDistrict(request.getDistrict());
-        address.setPhone(request.getPhone());
-        address.setWard(request.getWard());
-        address.setProvince(request.getProvince());
-        address.setStreet(request.getStreet());
-        if (request.isAddressDefault()) {
-            addressRepository.findByUser(currentUser).forEach(a -> {
-                if (!a.getId().equals(addressId) && a.isAddressDefault()) {
-                    a.setAddressDefault(false);
-                    addressRepository.save(a);
-                }
-            });
+
+        addressMapper.updateAddress(request, address);
+
+        if (Boolean.TRUE.equals(request.isAddressDefault())) {
+            addressRepository.findByUser_IdAndAddressDefaultTrue(user.getId())
+                    .stream()
+                    .filter(addr -> !addr.getId().equals(id))
+                    .forEach(addr -> {
+                        addr.setAddressDefault(false);
+                        addressRepository.save(addr);
+                    });
         }
 
-        return addressMapper.toDto(addressRepository.save(address));    }
+        return addressMapper.toDto(addressRepository.save(address));
+    }
+
 
     public void delete(Long addressId, String token){
         Address address = addressRepository.findById(addressId)

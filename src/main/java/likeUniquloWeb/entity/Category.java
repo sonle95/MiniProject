@@ -21,6 +21,9 @@ public class Category extends BaseEntity {
     @Column(length = 500)
     String description;
 
+    @Column(length = 500)
+    String imageUrl;
+
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     Set<Product> products;
 

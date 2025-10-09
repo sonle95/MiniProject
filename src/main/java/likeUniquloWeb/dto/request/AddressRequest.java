@@ -17,6 +17,6 @@ public class AddressRequest {
     String phone;
     String firstName;
     String lastName;
-    boolean addressDefault = false;
+    boolean addressDefault;
     Long userId;
 }

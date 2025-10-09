@@ -27,7 +27,6 @@ dependencies {
     implementation("com.nimbusds:nimbus-jose-jwt:9.37.3")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.boot:spring-boot-starter-mail")
-
     // MySQL driver
     runtimeOnly("com.mysql:mysql-connector-j")
 
