@@ -4,11 +4,15 @@ import likeUniquloWeb.dto.request.VariantRequest;
 import likeUniquloWeb.dto.response.OrderResponse;
 import likeUniquloWeb.dto.response.VariantResponse;
 import likeUniquloWeb.entity.Order;
+import likeUniquloWeb.entity.Product;
 import likeUniquloWeb.entity.ProductVariant;
+import likeUniquloWeb.entity.Stock;
 import likeUniquloWeb.exception.AppException;
 import likeUniquloWeb.exception.ErrorCode;
 import likeUniquloWeb.mapper.VariantMapper;
+import likeUniquloWeb.repository.ProductRepository;
 import likeUniquloWeb.repository.ProductVariantRepository;
+import likeUniquloWeb.repository.StockRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -28,13 +32,32 @@ public class ProductVariantService {
 
     ProductVariantRepository variantRepository;
     VariantMapper variantMapper;
+    ProductRepository productRepository;
+    StockRepository stockRepository;
 
 //    @PreAuthorize("hasRole('ADMIN')")
     public VariantResponse createVariant(VariantRequest request){
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
+        // 2. Check trùng lặp color + size
+        boolean isDuplicate = variantRepository.existsByProductIdAndColorAndSize(
+                request.getProductId(),
+                request.getColor(),
+                request.getSize()
+        );
+        if (isDuplicate) {
+            throw new AppException(ErrorCode.VARIANT_EXISTED);
+        }
+
+        // 3. Tạo variant
         ProductVariant variant = variantMapper.toEntity(request);
+        variant.setProduct(product);
+        ProductVariant savedVariant = variantRepository.save(variant);
 
-        return variantMapper.toDto(variantRepository.save(variant));
+        // 4. Tự động tạo stock với quantity = 0
+
+        return variantMapper.toDto(savedVariant);
     }
 
 //    @PreAuthorize("hasRole('ADMIN')")
@@ -62,9 +85,29 @@ public class ProductVariantService {
     public VariantResponse updateVariant(Long id, VariantRequest request){
         ProductVariant variant = variantRepository.findById(id)
                 .orElseThrow(()->new AppException(ErrorCode.VARIANT_NOT_FOUND));
-        variantMapper.updateVariant(request,variant);
-        ProductVariant saved = variantRepository.save(variant);
-        return variantMapper.toDto(saved);
+
+        // 2. Check duplicate nếu đổi color hoặc size
+        boolean isDuplicate = variantRepository
+                .existsByProductIdAndColorAndSizeAndIdNot(
+                        variant.getProduct().getId(),
+                        request.getColor(),
+                        request.getSize(),
+                        id
+                );
+        if (isDuplicate) {
+            throw new AppException(ErrorCode.VARIANT_EXISTED);
+        }
+        variantMapper.updateVariant(request, variant);
+
+        if (!variant.getProduct().getId().equals(request.getProductId())) {
+            Product product = productRepository.findById(request.getProductId())
+                    .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+            variant.setProduct(product);
+        }
+
+        ProductVariant savedVariant = variantRepository.save(variant);
+
+        return variantMapper.toDto(savedVariant);
     }
 
     public Page<VariantResponse> getVariantsByPage(int page, int size, String sortDir){

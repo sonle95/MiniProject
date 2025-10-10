@@ -15,6 +15,9 @@ public interface OrderItemMapper {
 
     @Mapping(target = "productName", source = "productVariant.product.name" )
     @Mapping(target = "productVariantId", source = "productVariant.id")
+    @Mapping(target = "productSku", source = "productVariant.product.stockKeepingUnit")
+    @Mapping(target = "size", source = "productVariant.size")
+    @Mapping(target = "color", source = "productVariant.color")
     OrderItemResponse itemToDto(OrderItems orderItems);
 
     @Mapping(target = "id", ignore = true)

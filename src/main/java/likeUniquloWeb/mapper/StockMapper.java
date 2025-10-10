@@ -17,6 +17,7 @@ public interface StockMapper {
 
     @Mapping(target = "productVariantId", source = "productVariant.id")
     @Mapping(target = "quantity", source = "quantity")
+    @Mapping(target = "productName", source = "productVariant.product.name")
     StockResponse toDto(Stock stock);
     void update(StockRequest request, @MappingTarget Stock stock);
 

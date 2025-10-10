@@ -61,7 +61,8 @@ public enum ErrorCode {
     FORBIDDEN(1051, "method is not allowed", HttpStatus.FORBIDDEN),
     QUANTITY_EXISTED(1052, "quantity is set already", HttpStatus.FORBIDDEN),
     ADDRESS_LIMIT_EXCEEDED(1053,"each user must not have more than three addresses", HttpStatus.FORBIDDEN)
-    ,CATEGORY_HAS_PRODUCTS(1054,"category has products", HttpStatus.FORBIDDEN)
+    ,CATEGORY_HAS_PRODUCTS(1054,"category has products", HttpStatus.FORBIDDEN),
+    VARIANT_EXISTED(1055,"variant existed", HttpStatus.BAD_REQUEST)
     ;
 
     ;

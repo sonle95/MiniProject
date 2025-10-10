@@ -32,17 +32,20 @@ public class StockService {
 
 //    @PreAuthorize("hasRole('ADMIN')")
     public StockResponse createStock(StockRequest request){
-        Stock stock = stockMapper.toEntity(request);
-
         Long variantId = request.getProductVariantId();
         ProductVariant productVariant = variantRepository.findById(variantId)
                 .orElseThrow(()-> new AppException(ErrorCode.VARIANT_NOT_FOUND));
-        if(productVariant.getStock().getQuantity() != 0){
-            throw new AppException(ErrorCode.QUANTITY_EXISTED);
+
+        if(productVariant.getStock() != null){
+            Stock existingStock = productVariant.getStock();
+            existingStock.setQuantity(request.getQuantity());
+            return stockMapper.toDto(stockRepository.save(existingStock));
         }
+
+        Stock stock = stockMapper.toEntity(request);
         stock.setProductVariant(productVariant);
-        return  stockMapper.toDto(stockRepository.save(stock));
-    }
+        return stockMapper.toDto(stockRepository.save(stock));
+}
 
 //    @PreAuthorize("hasRole('ADMIN')")
     public List<StockResponse> getAll(){

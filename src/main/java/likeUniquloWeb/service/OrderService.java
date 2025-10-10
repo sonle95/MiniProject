@@ -43,6 +43,7 @@ public class OrderService {
     OrderItemsRepository itemsRepository;
     AddressRepository addressRepository;
     AuthenticationService authenticationService;
+    OrderNotificationService orderNotificationService;
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Transactional
@@ -106,7 +107,15 @@ public class OrderService {
         }
         stockRepository.saveAll(stocks.values());
         order.setTotalAmount(calculateTotalAmount(order));
-        return orderMapper.orderToDto(orderRepository.save(order));
+
+
+        Order savedOrder = orderRepository.save(order);
+
+        // ✅ GỬI THÔNG BÁO
+        orderNotificationService.notifyNewOrder(savedOrder);
+
+        log.info("Order created: {}", savedOrder.getOrderNumber());
+        return orderMapper.orderToDto(savedOrder);
 
     }
 

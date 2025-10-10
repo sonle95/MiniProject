@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Stock extends BaseEntity {
     @Id
@@ -29,6 +30,8 @@ public class Stock extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_variant_id")
     ProductVariant productVariant;
+
+
 
 
     @PrePersist @PreUpdate
