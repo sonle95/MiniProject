@@ -65,3 +65,9 @@ vnpay:
   version: 2.1.0
   command: pay
   order-type: other
+
+dropbox:
+  access:
+    token: ${DROPBOX_TOKEN}
+  base:
+    path: /minimalist-menswear-byson

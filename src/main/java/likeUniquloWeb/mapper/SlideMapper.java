@@ -16,6 +16,6 @@ public interface SlideMapper {
 
     default String toPublicUrl(String path) {
         if (path == null) return null;
-        return "http://localhost:8080" + path;
+        return path;
     }
 }

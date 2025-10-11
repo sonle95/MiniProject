@@ -24,10 +24,16 @@ public class ImageController {
     ImageService imageService;
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public List<ImageResponse> uploadProductImages
+    public List<ImageResponse> uploadImagesForProduct
             (@RequestParam Long productId, @RequestParam("files")List<MultipartFile> files) throws IOException {
-        return imageService.upLoadProductImages(productId, files);
+        return imageService.upLoadImagesForProduct(productId, files);
     }
+
+//    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public List<ImageResponse> uploadProductImages
+//            (@RequestParam Long productId, @RequestParam("files")List<MultipartFile> files) throws IOException {
+//        return imageService.upLoadProductImages(productId, files);
+//    }
 
     @GetMapping
     public List<ImageResponse> getAll(){

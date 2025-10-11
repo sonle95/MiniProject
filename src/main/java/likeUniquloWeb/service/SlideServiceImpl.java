@@ -24,11 +24,29 @@ import java.util.List;
 public class SlideServiceImpl implements SlideService{
     SlideRepository slideRepository;
     SlideMapper slideMapper;
+    DropboxService dropboxService;
 
     @Value("${app.upload.dir}")
     @NonFinal
     String uploadDir;
 
+    @Override
+    public List<SlideResponse> uploadSlidesForWeb(List<MultipartFile> files) throws IOException {
+        if (files == null || files.isEmpty()) {
+            throw new AppException(ErrorCode.NO_FILE_UPLOADED);
+        }
+
+        List<String> dropboxUrls = dropboxService.uploadFiles(files, "slides");
+
+        List<Slide> slides = dropboxUrls.stream().map(url -> {
+            Slide slide = new Slide();
+            slide.setImgUrl(url);
+            slide.setActive(true);
+            return slide;
+        }).toList();
+
+        return slideMapper.toDtoList(slideRepository.saveAll(slides));
+    }
     @Override
     public List<SlideResponse> uploadSlides(List<MultipartFile> files) throws IOException {
         if (files == null || files.isEmpty()) {

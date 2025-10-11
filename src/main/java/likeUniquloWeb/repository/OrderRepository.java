@@ -71,4 +71,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Object[]> getTopSpendingUsers(@Param("status") PaymentStatus status);
 
 
+    boolean existsByAddressId(Long addressId);
 }

@@ -9,6 +9,7 @@ import likeUniquloWeb.exception.AppException;
 import likeUniquloWeb.exception.ErrorCode;
 import likeUniquloWeb.mapper.AddressMapper;
 import likeUniquloWeb.repository.AddressRepository;
+import likeUniquloWeb.repository.OrderRepository;
 import likeUniquloWeb.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class AddressService {
     AddressMapper addressMapper;
     UserRepository userRepository;
     AuthenticationService authenticationService;
+    OrderRepository orderRepository;
     private static final int MAX_ADDRESSES_PER_USER = 3;
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
@@ -116,6 +118,10 @@ public class AddressService {
         User currentUser = authenticationService.getUserFromToken(token);
         if (!address.getUser().getId().equals(currentUser.getId())) {
             throw new AppException(ErrorCode.FORBIDDEN);
+        }
+        boolean hasOrders = orderRepository.existsByAddressId(addressId);
+        if (hasOrders) {
+            throw new AppException(ErrorCode.ADDRESS_HAS_ORDER);
         }
         addressRepository.delete(address);
     }
