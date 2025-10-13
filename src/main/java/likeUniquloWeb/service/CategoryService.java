@@ -32,7 +32,7 @@ public class CategoryService {
     CategoryRepository categoryRepository;
     CategoryMapper categoryMapper;
 
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse createCategory(CategoryRequest request){
         if(categoryRepository.existsByName(request.getName())){
             throw new AppException(ErrorCode.CATEGORY_EXISTED);
@@ -46,7 +46,7 @@ public class CategoryService {
         return categoryRepository.findAll().stream().map(categoryMapper::categoryToDto).toList();
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse getById(Long id){
         Category category = categoryRepository.findById(id).orElseThrow(()->
                 new AppException(ErrorCode.CATEGORY_NOT_FOUND)
@@ -56,7 +56,7 @@ public class CategoryService {
     }
 
 
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public CategoryResponse updateCategory(CategoryRequest request, Long id){
         Category category = categoryRepository.findById(id).orElseThrow(()->
@@ -74,7 +74,7 @@ public class CategoryService {
         return categoryMapper.categoryToDto(category);
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteById(Long id){
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));

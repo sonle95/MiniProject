@@ -26,6 +26,10 @@ public class OrderItemResponse {
 
     String productName;
 
+    String productSku;
+    String color;
+    String size;
+
 
 
 }

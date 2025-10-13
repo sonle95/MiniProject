@@ -27,8 +27,12 @@ public class RoleService {
 
     @PreAuthorize("hasRole('ADMIN')")
     public RoleResponse createRole(RoleRequest request){
-        if(!roleRepository.existsByName(request.getName()));
-            Role role = roleMapper.toEntity(request);
+        // Check if role already exists
+        if(roleRepository.existsByName(request.getName())){
+            throw new AppException(ErrorCode.ROLE_EXISTED);
+        }
+
+        Role role = roleMapper.toEntity(request);
 
         if(request.getPermissionName() != null && !request.getPermissionName().isEmpty()){
             var permissions = permissionRepository.findAllById(request.getPermissionName());
@@ -58,5 +62,12 @@ public class RoleService {
         roleMapper.update(request, role);
 
         return roleMapper.toDto(roleRepository.save(role));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public void delete(String id){
+        Role role = roleRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+        roleRepository.delete(role);
     }
 }

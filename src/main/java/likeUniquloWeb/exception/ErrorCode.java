@@ -61,8 +61,12 @@ public enum ErrorCode {
     FORBIDDEN(1051, "method is not allowed", HttpStatus.FORBIDDEN),
     QUANTITY_EXISTED(1052, "quantity is set already", HttpStatus.FORBIDDEN),
     ADDRESS_LIMIT_EXCEEDED(1053,"each user must not have more than three addresses", HttpStatus.FORBIDDEN)
-    ,CATEGORY_HAS_PRODUCTS(1054,"category has products", HttpStatus.FORBIDDEN)
-    ;
+    ,CATEGORY_HAS_PRODUCTS(1054,"category has products", HttpStatus.FORBIDDEN),
+    VARIANT_EXISTED(1055,"variant existed", HttpStatus.BAD_REQUEST),
+    ADDRESS_HAS_ORDER(1056, "Không thể xóa địa chỉ này vì đã có đơn hàng sử dụng", HttpStatus.BAD_REQUEST)
+    ,FILE_UPLOAD_FAILED(1067, "fail to upload files", HttpStatus.BAD_REQUEST)
+    ,ROLE_EXISTED(1068, "role already exists", HttpStatus.BAD_REQUEST)
+    ,USER_NOT_ACTIVE(1069, "user account is not active", HttpStatus.FORBIDDEN)
 
     ;
 

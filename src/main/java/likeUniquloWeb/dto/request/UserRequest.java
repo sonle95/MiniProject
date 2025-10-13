@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -13,10 +14,12 @@ import java.time.LocalDate;
 public class UserRequest {
     String username;
     String password;
+    String confirmPassword;
     String firstName;
     String lastName;
     String email;
     LocalDate dob;
+    Set<String> roles;
 
 }
 

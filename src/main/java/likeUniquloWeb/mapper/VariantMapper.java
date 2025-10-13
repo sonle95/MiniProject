@@ -14,6 +14,7 @@ public interface VariantMapper {
     @Mapping(target = "productName", source = "product.name")
     VariantResponse toDto(ProductVariant variant);
 
+    @Mapping(target = "product", ignore = true )
     @Mapping(target = "stock.productVariant", ignore = true)
     ProductVariant toEntity(VariantRequest request);
 

@@ -12,6 +12,10 @@ import java.util.List;
 public interface ImageService {
 
 
+
+    List<ImageResponse> upLoadImagesForProduct(Long productId, List<MultipartFile> files)
+            throws IOException;
+
     List<ImageResponse> upLoadProductImages(Long productId, List<MultipartFile> files)
         throws IOException;
 

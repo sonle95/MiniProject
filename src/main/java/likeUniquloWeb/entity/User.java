@@ -37,7 +37,7 @@ public class User extends BaseEntity {
     boolean emailVerified;
 
     @Column(nullable = false)
-    boolean active = false;
+    boolean active = true;
 
     @Column(name = "is_admin", nullable = false)
     boolean admin;

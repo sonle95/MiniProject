@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.domain.Pageable;
@@ -41,7 +42,7 @@ public class ProductService {
     CategoryRepository categoryRepository;
     VariantMapper variantMapper;
 
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ProductResponse create(ProductRequest request) throws IOException {
         try{
         validateProductRequest(request);
@@ -81,6 +82,7 @@ public class ProductService {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public ProductResponse createProduct(ProductRequest request, List<MultipartFile> files) throws IOException {
         validateProductRequest(request);
         Product product = mapper.toEntity(request);
@@ -124,7 +126,6 @@ public class ProductService {
     }
 
 
-    //    @PreAuthorize("hasRole('ADMIN')")
     public List<ProductResponse> getAllProducts(){
         List<Product> products = repository.findAll();
         for (Product p : products) {
@@ -136,7 +137,6 @@ public class ProductService {
                 ).toList();
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
     public List<ProductResponse> getProductsByCategory(String categoryName){
         if (categoryName == null || categoryName.trim().isEmpty()) {
             throw new AppException(ErrorCode.CATEGORY_MUST_NOT_BE_NULL);
@@ -147,7 +147,6 @@ public class ProductService {
                 .map(mapper::toDto).toList();
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
     public ProductResponse getById(Long id){
         Product product = repository.findById(id).orElseThrow(()->
                 new RuntimeException(ErrorCode.PRODUCT_NOT_FOUND.getMessage())
@@ -166,14 +165,14 @@ public class ProductService {
         return response;
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteById(Long id){
         Product product = repository.findById(id)
                         .orElseThrow(()->new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         repository.deleteById(id);
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ProductResponse updateProduct(ProductUpdateRequest request, Long id) throws IOException {
         validateProductUpdateRequest(request);
         Product product = repository.findById(id).orElseThrow(()->
@@ -228,7 +227,6 @@ public class ProductService {
     private void handlingImageUpdate(List<MultipartFile> newImages, Product product, List<Long> deleteImageIds)
             throws IOException {
 
-        // ✅ Lọc bỏ null values và validate
         if(deleteImageIds != null && !deleteImageIds.isEmpty()){
             List<Long> validIds = deleteImageIds.stream()
                     .filter(id -> id != null && id > 0)
@@ -241,13 +239,12 @@ public class ProductService {
                         imageService.delete(id);
                     } catch (Exception e) {
                         log.warn("Failed to delete image with id {}: {}", id, e.getMessage());
-                        // Không throw exception để không làm fail toàn bộ request
                     }
                 });
             }
         }
 
-        // Thêm ảnh mới
+
         if(newImages != null && !newImages.isEmpty()){
             List<ImageResponse> imageResponses = imageService.upLoadProductImages(product.getId(), newImages);
             List<Image> newImageEntities = imageMapper.imgToEntity(imageResponses);

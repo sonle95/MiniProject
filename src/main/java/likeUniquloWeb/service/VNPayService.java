@@ -28,22 +28,25 @@ public class VNPayService {
     private final VNPayConfig vnPayConfig;
     private final OrderRepository orderRepository;
 
-    /**
-     * Tạo URL thanh toán VNPay
-     */
+
     public String createPaymentUrl(VNPayRequest request, HttpServletRequest httpRequest) {
-        // Lấy thông tin order
+
         Order order = orderRepository.findById(request.getOrderId())
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
 
-        // Tạo các tham số cho VNPay
+
         Map<String, String> vnpParams = new HashMap<>();
         vnpParams.put("vnp_Version", vnPayConfig.getVersion());
         vnpParams.put("vnp_Command", vnPayConfig.getCommand());
         vnpParams.put("vnp_TmnCode", vnPayConfig.getTmnCode());
 
         // Số tiền (VNPay yêu cầu nhân 100, đơn vị VNĐ)
+        // ✅ FIX: Kiểm tra số tiền hợp lệ (tối thiểu 10,000 VNĐ = 1,000,000 trong params)
         long amount = order.getTotalAmount().longValue() * 100;
+        if (amount < 1000000) {
+            log.warn("Amount {} is too small, setting to minimum 1,000,000", amount);
+            amount = 1000000; // 10,000 VNĐ
+        }
         vnpParams.put("vnp_Amount", String.valueOf(amount));
 
         vnpParams.put("vnp_CurrCode", "VND");
@@ -55,7 +58,14 @@ public class VNPayService {
         vnpParams.put("vnp_OrderInfo", "Thanh toan don hang: " + order.getOrderNumber());
         vnpParams.put("vnp_OrderType", vnPayConfig.getOrderType());
         vnpParams.put("vnp_Locale", "vn");
-        vnpParams.put("vnp_ReturnUrl", vnPayConfig.getReturnUrl());
+
+        // ✅ FIX: Thêm bankCode vào return URL nếu có
+        String returnUrl = vnPayConfig.getReturnUrl();
+        if (request.getBankCode() != null && !request.getBankCode().isEmpty()) {
+            returnUrl += (returnUrl.contains("?") ? "&" : "?") + "bankCode=" + request.getBankCode();
+        }
+        vnpParams.put("vnp_ReturnUrl", returnUrl);
+
         vnpParams.put("vnp_IpAddr", VNPayUtil.getIpAddress(httpRequest));
 
         // Thời gian tạo và hết hạn
@@ -84,23 +94,27 @@ public class VNPayService {
             String fieldName = itr.next();
             String fieldValue = vnpParams.get(fieldName);
             if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                // Build hash data (KHÔNG URL encode)
-                hashData.append(fieldName);
-                hashData.append('=');
-                hashData.append(fieldValue);  // ✅ KHÔNG encode
-
-                // Build query (CÓ URL encode)
                 try {
-                    query.append(URLEncoder.encode(fieldName, StandardCharsets.UTF_8.toString()));
+                    // ✅ URL encode cho cả hashData và query
+                    String encodedName = URLEncoder.encode(fieldName, StandardCharsets.UTF_8.toString());
+                    String encodedValue = URLEncoder.encode(fieldValue, StandardCharsets.UTF_8.toString());
+
+                    // Build hash data (✅ ĐÃ URL encode)
+                    hashData.append(encodedName);
+                    hashData.append('=');
+                    hashData.append(encodedValue);
+
+                    // Build query (✅ ĐÃ URL encode)
+                    query.append(encodedName);
                     query.append('=');
-                    query.append(URLEncoder.encode(fieldValue, StandardCharsets.UTF_8.toString()));
+                    query.append(encodedValue);
+
+                    if (itr.hasNext()) {
+                        query.append('&');
+                        hashData.append('&');
+                    }
                 } catch (UnsupportedEncodingException e) {
                     log.error("Encoding error", e);
-                }
-
-                if (itr.hasNext()) {
-                    query.append('&');
-                    hashData.append('&');
                 }
             }
         }
@@ -113,7 +127,7 @@ public class VNPayService {
         log.info("Generated VNPay payment URL for order: {}", order.getOrderNumber());
         log.info("=== VNPay Parameters ===");
         vnpParams.forEach((key, value) -> log.info("{} = {}", key, value));
-        log.info("Hash Data: {}", hashData.toString());
+        log.info("Hash Data (URL Encoded): {}", hashData.toString());
         log.info("Hash Secret: {}", vnPayConfig.getHashSecret());
         log.info("vnp_SecureHash: {}", vnpSecureHash);
         log.info("Payment URL: {}", paymentUrl);
@@ -128,63 +142,81 @@ public class VNPayService {
     public Map<String, String> handleCallback(Map<String, String> params) {
         Map<String, String> result = new HashMap<>();
 
-        // Lấy secure hash từ params
-        String vnpSecureHash = params.get("vnp_SecureHash");
+        try {
+            // Lấy secure hash từ params
+            String vnpSecureHash = params.get("vnp_SecureHash");
 
-        // Remove vnp_SecureHash để verify
-        params.remove("vnp_SecureHash");
-        params.remove("vnp_SecureHashType");
-
-        // Verify signature
-        String signValue = VNPayUtil.hashAllFields(params, vnPayConfig.getHashSecret());
-
-        if (signValue.equals(vnpSecureHash)) {
-            String responseCode = params.get("vnp_ResponseCode");
-            String txnRef = params.get("vnp_TxnRef");
-            String amount = params.get("vnp_Amount");
-            String orderInfo = params.get("vnp_OrderInfo");
-            String transactionNo = params.get("vnp_TransactionNo");
-            String payDate = params.get("vnp_PayDate");
-
-            // Extract order number từ txnRef
-            String orderNumber = txnRef.split("_")[0];
-
-            Order order = orderRepository.findByOrderNumber(orderNumber)
-                    .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
-
-            if ("00".equals(responseCode)) {
-                // Thanh toán thành công
-                order.setPaymentStatus(PaymentStatus.PAID);
-                order.setPaymentMethod("VNPAY");
-                orderRepository.save(order);
-
-                result.put("status", "success");
-                result.put("message", "Payment successful");
-                result.put("orderId", order.getId().toString());
-                result.put("orderNumber", orderNumber);
-                result.put("transactionNo", transactionNo);
-                result.put("amount", amount);
-                result.put("payDate", payDate);
-
-                log.info("Payment successful for order: {}", orderNumber);
-            } else {
-                // Thanh toán thất bại
-                order.setPaymentStatus(PaymentStatus.FAILED);
-                orderRepository.save(order);
-
-                result.put("status", "failed");
-                result.put("message", "Payment failed with code: " + responseCode);
-                result.put("orderId", order.getId().toString());
-                result.put("orderNumber", orderNumber);
-                result.put("responseCode", responseCode);
-
-                log.warn("Payment failed for order: {} with code: {}", orderNumber, responseCode);
+            if (vnpSecureHash == null || vnpSecureHash.isEmpty()) {
+                result.put("status", "error");
+                result.put("message", "Missing vnp_SecureHash");
+                log.error("Missing vnp_SecureHash in callback");
+                return result;
             }
-        } else {
-            // Invalid signature
+
+            // Clone params để không bị thay đổi
+            Map<String, String> paramsClone = new HashMap<>(params);
+
+            // Remove vnp_SecureHash để verify
+            paramsClone.remove("vnp_SecureHash");
+            paramsClone.remove("vnp_SecureHashType");
+
+            // Verify signature
+            String signValue = VNPayUtil.hashAllFields(paramsClone, vnPayConfig.getHashSecret());
+
+            log.info("VNPay Callback - Expected: {}, Actual: {}", signValue, vnpSecureHash);
+
+            if (signValue.equals(vnpSecureHash)) {
+                String responseCode = params.get("vnp_ResponseCode");
+                String txnRef = params.get("vnp_TxnRef");
+                String amount = params.get("vnp_Amount");
+                String orderInfo = params.get("vnp_OrderInfo");
+                String transactionNo = params.get("vnp_TransactionNo");
+                String payDate = params.get("vnp_PayDate");
+
+                // Extract order number từ txnRef
+                String orderNumber = txnRef != null ? txnRef.split("_")[0] : "";
+
+                Order order = orderRepository.findByOrderNumber(orderNumber)
+                        .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+
+                if ("00".equals(responseCode)) {
+                    // ✅ Thanh toán thành công
+                    order.setPaymentStatus(PaymentStatus.PAID);
+                    order.setPaymentMethod("VNPAY");
+                    orderRepository.save(order);
+
+                    result.put("status", "success");
+                    result.put("message", "Payment successful");
+                    result.put("orderId", order.getId().toString());
+                    result.put("orderNumber", orderNumber);
+                    result.put("transactionNo", transactionNo);
+                    result.put("amount", amount);
+                    result.put("payDate", payDate);
+
+                    log.info("✅ Payment successful for order: {} | TxnNo: {}", orderNumber, transactionNo);
+                } else {
+                    // ❌ Thanh toán thất bại
+                    order.setPaymentStatus(PaymentStatus.FAILED);
+                    orderRepository.save(order);
+
+                    result.put("status", "failed");
+                    result.put("message", "Payment failed with code: " + responseCode);
+                    result.put("orderId", order.getId().toString());
+                    result.put("orderNumber", orderNumber);
+                    result.put("responseCode", responseCode);
+
+                    log.warn("❌ Payment failed for order: {} with code: {}", orderNumber, responseCode);
+                }
+            } else {
+                // ❌ Invalid signature
+                result.put("status", "error");
+                result.put("message", "Invalid signature");
+                log.error("❌ Invalid VNPay signature. Expected: {}, Got: {}", signValue, vnpSecureHash);
+            }
+        } catch (Exception e) {
             result.put("status", "error");
-            result.put("message", "Invalid signature");
-            log.error("Invalid VNPay signature");
+            result.put("message", e.getMessage());
+            log.error("❌ Error handling VNPay callback", e);
         }
 
         return result;
@@ -201,7 +233,7 @@ public class VNPayService {
         result.put("orderId", order.getId().toString());
         result.put("orderNumber", order.getOrderNumber());
         result.put("paymentStatus", order.getPaymentStatus().toString());
-        result.put("paymentMethod", order.getPaymentMethod());
+        result.put("paymentMethod", order.getPaymentMethod() != null ? order.getPaymentMethod() : "NONE");
         result.put("totalAmount", order.getTotalAmount().toString());
 
         return result;

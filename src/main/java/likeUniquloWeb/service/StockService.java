@@ -30,34 +30,37 @@ public class StockService {
     StockMapper stockMapper;
     ProductVariantRepository variantRepository;
 
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public StockResponse createStock(StockRequest request){
-        Stock stock = stockMapper.toEntity(request);
-
         Long variantId = request.getProductVariantId();
         ProductVariant productVariant = variantRepository.findById(variantId)
                 .orElseThrow(()-> new AppException(ErrorCode.VARIANT_NOT_FOUND));
-        if(productVariant.getStock().getQuantity() != 0){
-            throw new AppException(ErrorCode.QUANTITY_EXISTED);
-        }
-        stock.setProductVariant(productVariant);
-        return  stockMapper.toDto(stockRepository.save(stock));
-    }
 
-//    @PreAuthorize("hasRole('ADMIN')")
+        if(productVariant.getStock() != null){
+            Stock existingStock = productVariant.getStock();
+            existingStock.setQuantity(request.getQuantity());
+            return stockMapper.toDto(stockRepository.save(existingStock));
+        }
+
+        Stock stock = stockMapper.toEntity(request);
+        stock.setProductVariant(productVariant);
+        return stockMapper.toDto(stockRepository.save(stock));
+}
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public List<StockResponse> getAll(){
         return stockRepository.findAll().stream()
                 .map(stockMapper::toDto).toList();
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public StockResponse getById(Long id){
         Stock stock = stockRepository.findById(id)
                 .orElseThrow(()->new AppException(ErrorCode.STOCK_NOT_FOUND));
         return stockMapper.toDto(stock);
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public StockResponse update(Long id, StockRequest request){
         Stock stock = stockRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.STOCK_NOT_FOUND));
@@ -74,7 +77,7 @@ public class StockService {
         return stockMapper.toDto(stockRepository.save(stock));
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(Long id){
         stockRepository.deleteById(id);
     }

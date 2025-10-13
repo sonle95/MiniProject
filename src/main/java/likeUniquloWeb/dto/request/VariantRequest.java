@@ -23,12 +23,14 @@ public class VariantRequest {
     String color;
 
     @NotNull
-
     @DecimalMin(value = "0.01", message = "Price must be greater than 0")
     @Digits(integer = 10, fraction = 2, message = "Invalid price format")
     BigDecimal price;
 
     StockRequest stock;
+
+    @NotNull
+    Long productId;
 
 
 

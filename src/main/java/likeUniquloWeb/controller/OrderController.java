@@ -87,6 +87,18 @@ public class OrderController {
     ) {
         return orderService.getOrdersByPage(page, size, sortDir);
     }
+
+
+
+    @GetMapping("/me")
+    public Page<OrderResponse> getMyOrders(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ) {
+        return orderService.getMyOrder(token,page,size,sortDir);
+    }
 }
 
 

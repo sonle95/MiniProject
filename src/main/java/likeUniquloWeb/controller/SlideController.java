@@ -18,10 +18,16 @@ public class SlideController {
 
     private final SlideService slideService;
 
+
     @PostMapping("/upload")
-    public List<SlideResponse> uploadSlides(@RequestParam("files") List<MultipartFile> files) throws IOException {
-        return slideService.uploadSlides(files);
+    public List<SlideResponse> uploadSlidesForWeb(@RequestParam("files") List<MultipartFile> files) throws IOException {
+        return slideService.uploadSlidesForWeb(files);
     }
+
+//    @PostMapping("/upload")
+//    public List<SlideResponse> uploadSlides(@RequestParam("files") List<MultipartFile> files) throws IOException {
+//        return slideService.uploadSlides(files);
+//    }
 
     @GetMapping
     public List<SlideResponse> getAllSlides() {

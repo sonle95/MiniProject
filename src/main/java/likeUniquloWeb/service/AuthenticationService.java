@@ -25,6 +25,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,7 +69,6 @@ public class AuthenticationService {
     int accessTokenExpirationHours;
 
     private static final int MAX_REFRESH_TOKENS_PER_USER = 5;
-
 
     public UserResponse register(RegistrationRequest request){
         if(userRepository.existsByUsername(request.getUsername())){
@@ -116,6 +116,11 @@ public class AuthenticationService {
     public AuthenticationResponse authenticate(AuthenticationRequest request){
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        // Check if user is active
+        if(!user.isActive()){
+            throw new AppException(ErrorCode.USER_NOT_ACTIVE);
+        }
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 

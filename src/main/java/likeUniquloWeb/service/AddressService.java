@@ -9,6 +9,7 @@ import likeUniquloWeb.exception.AppException;
 import likeUniquloWeb.exception.ErrorCode;
 import likeUniquloWeb.mapper.AddressMapper;
 import likeUniquloWeb.repository.AddressRepository;
+import likeUniquloWeb.repository.OrderRepository;
 import likeUniquloWeb.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class AddressService {
     AddressMapper addressMapper;
     UserRepository userRepository;
     AuthenticationService authenticationService;
+    OrderRepository orderRepository;
     private static final int MAX_ADDRESSES_PER_USER = 3;
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
@@ -57,12 +59,12 @@ public class AddressService {
 
         return addressMapper.toDto(addressRepository.save(address));
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public List<AddressResponse> getAddresses(){
         return addressRepository.findAll()
                 .stream().map(addressMapper::toDto).toList();
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public List<AddressResponse> getMyAddresses(String token) {
         User user = authenticationService.getUserFromToken(token);
         List<Address> addresses = addressRepository.findByUser(user);
@@ -109,7 +111,7 @@ public class AddressService {
         return addressMapper.toDto(addressRepository.save(address));
     }
 
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public void delete(Long addressId, String token){
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(()-> new AppException(ErrorCode.NOT_FOUND));
@@ -117,9 +119,13 @@ public class AddressService {
         if (!address.getUser().getId().equals(currentUser.getId())) {
             throw new AppException(ErrorCode.FORBIDDEN);
         }
+        boolean hasOrders = orderRepository.existsByAddressId(addressId);
+        if (hasOrders) {
+            throw new AppException(ErrorCode.ADDRESS_HAS_ORDER);
+        }
         addressRepository.delete(address);
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public List<AddressResponse> getAddressesByUserId(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
@@ -128,7 +134,7 @@ public class AddressService {
                 .map(addressMapper::toDto)
                 .toList();
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public Page<AddressResponse> getAddressesByPageAndSearch(int page, int size, String keySearch, String sortDir){
         Sort sort = sortDir.equalsIgnoreCase("asc")
                 ? Sort.by("id").ascending()

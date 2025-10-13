@@ -53,7 +53,7 @@ public class ReviewService {
         review.setUser(user);
         return reviewMapper.toDto(reviewRepository.save(review));
     }
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+
     public List<ReviewResponse> getReviewByProduct(Long productId) {
         List<Review> reviews = reviewRepository.findByProduct_Id(productId);
         return reviews.stream()
@@ -61,7 +61,7 @@ public class ReviewService {
                 .toList();
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+
     public List<ReviewResponse> getAllReviews(){
         return reviewRepository.findAll().stream().map(reviewMapper::toDto).toList();
     }

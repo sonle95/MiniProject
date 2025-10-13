@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +44,7 @@ public class ShoppingCartService {
 
 
 
-    //    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+        @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Transactional
     public CartResponse addItemToCart(String token, CartItemRequest request){
         validateStockAvailability(request.getProductVariantId(), request.getQuantity());
@@ -69,7 +70,7 @@ public class ShoppingCartService {
 
     }
 
-    //    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+        @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Transactional
     public OrderResponse checkOutCart(String token, CheckoutRequest request){
         log.info("Received OrderRequest - addressId: {}", request.getAddressId());
@@ -88,7 +89,7 @@ public class ShoppingCartService {
         return orderResponse;
     }
 
-    //    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+        @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Transactional
     public CartResponse removeItem(String token, Long cartItemId){
         User user = authenticationService.getUserFromToken(token);
@@ -102,7 +103,7 @@ public class ShoppingCartService {
         return cartMapper.toDto(cartRepository.save(cart));
     }
 
-    //    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+        @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Transactional
     public void clearCart(String token) {
         User user = authenticationService.getUserFromToken(token);
@@ -111,7 +112,7 @@ public class ShoppingCartService {
         cartRepository.save(cart);
     }
 
-    //    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+        @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Transactional
     public CartResponse updateVariant(String token, Long variantId, Long newVariantId){
         User user = authenticationService.getUserFromToken(token);
@@ -129,7 +130,7 @@ public class ShoppingCartService {
         return cartMapper.toDto(cartRepository.save(cart));
     }
 
-    //    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+        @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Transactional
     public CartResponse updateItemQuantity(String token, Long cartIemId, int newQuantity) {
         User user = authenticationService.getUserFromToken(token);
@@ -150,8 +151,7 @@ public class ShoppingCartService {
         return cartMapper.toDto(cartRepository.save(cart));
     }
 
-    //    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-//    @Transactional(readOnly = true)
+        @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public CartResponse getCart(String token) {
         User user = authenticationService.getUserFromToken(token);
         Cart cart = findCartByUserId(user.getId());

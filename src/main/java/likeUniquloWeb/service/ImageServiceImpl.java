@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,12 +36,33 @@ public class ImageServiceImpl implements ImageService {
     ProductRepository productRepository;
     ImageRepository imageRepository;
     ImageMapper imageMapper;
+    DropboxService dropboxService;
 
     @Value("${app.upload.dir}")
     @NonFinal
     String uploadDir;
 
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public List<ImageResponse> upLoadImagesForProduct(Long productId, List<MultipartFile> files) throws IOException {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        if (files == null || files.isEmpty()) {
+            throw new AppException(ErrorCode.NO_FILE_UPLOADED);
+        }
+        List<String> dropboxUrls = dropboxService.uploadFiles(files, "products");
+
+        List<Image> images = dropboxUrls.stream().map(url -> {
+            Image image = new Image();
+            image.setUrl(url);
+            image.setProduct(product);
+            return image;
+        }).toList();
+
+        return imageMapper.imgToDto(imageRepository.saveAll(images));
+    }
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<ImageResponse> upLoadProductImages(Long productId, List<MultipartFile> files) throws IOException {
 
@@ -64,6 +86,7 @@ public class ImageServiceImpl implements ImageService {
         return imageMapper.imgToDto(imageRepository.saveAll(images));
 
     }
+
 
     @Override
     public List<ImageResponse> getAll(){
@@ -90,7 +113,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public void delete(Long id) {
         if (id == null) {

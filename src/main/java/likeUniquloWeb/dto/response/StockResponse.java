@@ -17,5 +17,6 @@ public class StockResponse {
     int quantity;
     String warehouseCode;
     Long productVariantId;
+    String productName;
 
 }
