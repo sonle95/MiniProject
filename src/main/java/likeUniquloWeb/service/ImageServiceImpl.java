@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,6 +42,7 @@ public class ImageServiceImpl implements ImageService {
     @NonFinal
     String uploadDir;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<ImageResponse> upLoadImagesForProduct(Long productId, List<MultipartFile> files) throws IOException {
         Product product = productRepository.findById(productId)
@@ -60,7 +62,7 @@ public class ImageServiceImpl implements ImageService {
 
         return imageMapper.imgToDto(imageRepository.saveAll(images));
     }
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<ImageResponse> upLoadProductImages(Long productId, List<MultipartFile> files) throws IOException {
 
@@ -84,6 +86,7 @@ public class ImageServiceImpl implements ImageService {
         return imageMapper.imgToDto(imageRepository.saveAll(images));
 
     }
+
 
     @Override
     public List<ImageResponse> getAll(){
@@ -110,7 +113,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public void delete(Long id) {
         if (id == null) {

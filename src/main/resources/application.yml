@@ -34,6 +34,11 @@ server:
 app:
   upload:
     dir: C:/Users/ADMIN/Desktop/likeUniWebImages
+  admin:
+    auto-create: true
+    username: admin
+    password: admin123
+    email: admin@example.com
 
 jwt:
   signer:

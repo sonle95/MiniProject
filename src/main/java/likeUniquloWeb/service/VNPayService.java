@@ -28,15 +28,13 @@ public class VNPayService {
     private final VNPayConfig vnPayConfig;
     private final OrderRepository orderRepository;
 
-    /**
-     * Tạo URL thanh toán VNPay
-     */
+
     public String createPaymentUrl(VNPayRequest request, HttpServletRequest httpRequest) {
-        // Lấy thông tin order
+
         Order order = orderRepository.findById(request.getOrderId())
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
 
-        // Tạo các tham số cho VNPay
+
         Map<String, String> vnpParams = new HashMap<>();
         vnpParams.put("vnp_Version", vnPayConfig.getVersion());
         vnpParams.put("vnp_Command", vnPayConfig.getCommand());

@@ -70,4 +70,15 @@ public class UserController {
         return response;
     }
 
+    @PatchMapping("/{userId}/toggle-active")
+    public UserResponse toggleActive(@PathVariable Long userId) {
+        return userService.toggleUserActive(userId);
+    }
+
+    @PatchMapping("/{userId}/active")
+    @PreAuthorize("hasRole('ADMIN')")
+    public UserResponse setActive(@PathVariable Long userId, @RequestParam boolean status) {
+        return userService.setUserActive(userId, status);
+    }
+
 }

@@ -59,12 +59,12 @@ public class AddressService {
 
         return addressMapper.toDto(addressRepository.save(address));
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public List<AddressResponse> getAddresses(){
         return addressRepository.findAll()
                 .stream().map(addressMapper::toDto).toList();
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public List<AddressResponse> getMyAddresses(String token) {
         User user = authenticationService.getUserFromToken(token);
         List<Address> addresses = addressRepository.findByUser(user);
@@ -111,7 +111,7 @@ public class AddressService {
         return addressMapper.toDto(addressRepository.save(address));
     }
 
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public void delete(Long addressId, String token){
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(()-> new AppException(ErrorCode.NOT_FOUND));
@@ -125,7 +125,7 @@ public class AddressService {
         }
         addressRepository.delete(address);
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public List<AddressResponse> getAddressesByUserId(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
@@ -134,7 +134,7 @@ public class AddressService {
                 .map(addressMapper::toDto)
                 .toList();
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public Page<AddressResponse> getAddressesByPageAndSearch(int page, int size, String keySearch, String sortDir){
         Sort sort = sortDir.equalsIgnoreCase("asc")
                 ? Sort.by("id").ascending()

@@ -15,10 +15,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +41,7 @@ public class OrderService {
     AddressRepository addressRepository;
     AuthenticationService authenticationService;
     OrderNotificationService orderNotificationService;
+    MailService mailService;
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Transactional
@@ -111,7 +109,13 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        // ✅ GỬI THÔNG BÁO
+        mailService.sendTextMail(
+                user.getEmail(),
+                "Welcome to LikeUniqloWeb 🎉",
+                "Xin chào " + user.getUsername() + ",\n\n" +
+                        "Bạn đã đặt hàngthành công tại LikeUniqloWeb!"
+        );
+
         orderNotificationService.notifyNewOrder(savedOrder);
 
         log.info("Order created: {}", savedOrder.getOrderNumber());
@@ -387,6 +391,20 @@ public class OrderService {
 
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<Order> orders = orderRepository.findAll(pageable);
+        return orders.map(orderMapper::orderToDto);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public Page<OrderResponse> getMyOrder(String token, int page, int size, String sortDir){
+        Sort sort = sortDir.equalsIgnoreCase("asc")
+                ? Sort.by("createdAt").ascending()
+                : Sort.by("createdAt").descending();
+
+        User user = authenticationService.getUserFromToken(token);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Order> orders = orderRepository.findByUser(user, pageable);
+
         return orders.map(orderMapper::orderToDto);
     }
 

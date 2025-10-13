@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,6 +31,7 @@ public class SlideServiceImpl implements SlideService{
     @NonFinal
     String uploadDir;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<SlideResponse> uploadSlidesForWeb(List<MultipartFile> files) throws IOException {
         if (files == null || files.isEmpty()) {
@@ -47,6 +49,8 @@ public class SlideServiceImpl implements SlideService{
 
         return slideMapper.toDtoList(slideRepository.saveAll(slides));
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<SlideResponse> uploadSlides(List<MultipartFile> files) throws IOException {
         if (files == null || files.isEmpty()) {
@@ -71,6 +75,7 @@ public class SlideServiceImpl implements SlideService{
         return slideMapper.toDtoList(slideRepository.findAll());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public void deleteById(Long id) {
         slideRepository.deleteById(id);

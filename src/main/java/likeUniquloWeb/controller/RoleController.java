@@ -31,4 +31,9 @@ public class RoleController {
     public RoleResponse update(@PathVariable String roleName, @RequestBody RoleRequest request){
         return roleService.updateRole(roleName,request);
     }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable String id){
+        roleService.delete(id);
+    }
 }

@@ -35,12 +35,11 @@ public class ProductVariantService {
     ProductRepository productRepository;
     StockRepository stockRepository;
 
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public VariantResponse createVariant(VariantRequest request){
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        // 2. Check trùng lặp color + size
         boolean isDuplicate = variantRepository.existsByProductIdAndColorAndSize(
                 request.getProductId(),
                 request.getColor(),
@@ -50,29 +49,27 @@ public class ProductVariantService {
             throw new AppException(ErrorCode.VARIANT_EXISTED);
         }
 
-        // 3. Tạo variant
         ProductVariant variant = variantMapper.toEntity(request);
         variant.setProduct(product);
         ProductVariant savedVariant = variantRepository.save(variant);
 
-        // 4. Tự động tạo stock với quantity = 0
 
         return variantMapper.toDto(savedVariant);
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
+
     public List<VariantResponse> getAllVariants(){
         return variantRepository.findAll().stream().map(variantMapper::toDto).toList();
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
+
     public VariantResponse getById(Long id){
         ProductVariant variant = variantRepository.findById(id)
                 .orElseThrow(()->new AppException(ErrorCode.VARIANT_NOT_FOUND));
         return variantMapper.toDto(variant);
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteById(Long id){
         if (!variantRepository.existsById(id)) {
             throw new AppException(ErrorCode.VARIANT_NOT_FOUND);
@@ -81,12 +78,11 @@ public class ProductVariantService {
     }
 
 //
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public VariantResponse updateVariant(Long id, VariantRequest request){
         ProductVariant variant = variantRepository.findById(id)
                 .orElseThrow(()->new AppException(ErrorCode.VARIANT_NOT_FOUND));
 
-        // 2. Check duplicate nếu đổi color hoặc size
         boolean isDuplicate = variantRepository
                 .existsByProductIdAndColorAndSizeAndIdNot(
                         variant.getProduct().getId(),

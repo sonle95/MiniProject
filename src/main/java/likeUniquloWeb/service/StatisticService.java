@@ -9,6 +9,7 @@ import likeUniquloWeb.repository.OrderRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -22,6 +23,7 @@ import java.util.stream.IntStream;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StatisticService {
     OrderRepository orderRepository;
+
 
     public List<RevenueDTO> getMonthlyRevenue(int year) {
         List<Object[]> results = orderRepository.getMonthlyRevenue(
@@ -39,7 +41,6 @@ public class StatisticService {
                 .toList();
     }
 
-
     public List<YearlyRevenueDTO> getYearlyRevenue() {
         return orderRepository.getYearlyRevenue(PaymentStatus.PAID).stream()
                 .map(row -> new YearlyRevenueDTO(
@@ -49,7 +50,6 @@ public class StatisticService {
                 .collect(Collectors.toList());
     }
 
-    // ===== Top 5 sản phẩm bán chạy =====
     public List<TopProductDTO> getTopSellingProducts() {
         return orderRepository.getTopSellingProducts(PaymentStatus.PAID).stream()
                 .limit(5)
@@ -60,7 +60,7 @@ public class StatisticService {
                 .collect(Collectors.toList());
     }
 
-    // ===== Top khách hàng chi tiêu nhiều nhất =====
+
     public List<TopUserDTO> getTopSpendingUsers() {
         return orderRepository.getTopSpendingUsers(PaymentStatus.PAID).stream()
                 .limit(5)
