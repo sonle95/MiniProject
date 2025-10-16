@@ -2,9 +2,9 @@ spring:
   application:
     name: backend
   datasource:
-    url: jdbc:mysql://localhost:3306/project?createDatabaseIfNotExist=true
-    username: root
-    password: 1234567
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/project?createDatabaseIfNotExist=true
+    username: ${DB_PASSWORD:root}
+    password: ${DB_PASSWORD:1234567}
   jpa:
     show-sql: true
     hibernate:
