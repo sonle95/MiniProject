@@ -6,8 +6,14 @@ import likeUniquloWeb.entity.Cart;
 import likeUniquloWeb.entity.CartItem;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring")
+@Mapper(
+    componentModel = MappingConstants.ComponentModel.SPRING,
+    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+    unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface CartMapper {
     @Mapping(target = "totalItems", expression = "java(cart.getCartItems() != null ? cart.getCartItems().size() : 0)")
     @Mapping(target = "totalAmount", expression = "java(cart.getCartItems() != null ? cart.getCartItems().stream().map(item -> item.getPrice().multiply(new java.math.BigDecimal(item.getQuantity()))).reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add) : java.math.BigDecimal.ZERO)")

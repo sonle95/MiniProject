@@ -7,11 +7,17 @@ import likeUniquloWeb.entity.Product;
 import likeUniquloWeb.entity.Image;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {VariantMapper.class, ReviewMapper.class})
+@Mapper(
+    componentModel = MappingConstants.ComponentModel.SPRING,
+    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+    unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {VariantMapper.class, ReviewMapper.class})
 public interface ProductMapper {
 
     @Mapping(target = "id", ignore = true)

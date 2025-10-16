@@ -5,8 +5,14 @@ import likeUniquloWeb.dto.response.PaymentResponse;
 import likeUniquloWeb.entity.Payment;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring", uses = {OrderItemMapper.class})
+@Mapper(
+    componentModel = MappingConstants.ComponentModel.SPRING,
+    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+    unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {OrderItemMapper.class})
 public interface PaymentMapper {
     @Mapping(target = "orderId", source = "order.id")
     PaymentResponse toDto(Payment payment);

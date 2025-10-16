@@ -5,9 +5,14 @@ import likeUniquloWeb.dto.response.VariantResponse;
 import likeUniquloWeb.entity.ProductVariant;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring", uses = {StockMapper.class})
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
+    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+    unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {StockMapper.class})
 public interface VariantMapper {
 
     @Mapping(target = "productId", source = "product.id")

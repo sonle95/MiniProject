@@ -5,10 +5,16 @@ import likeUniquloWeb.dto.response.OrderItemResponse;
 import likeUniquloWeb.entity.OrderItems;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
 
 
-@Mapper(componentModel = "spring", uses = {VariantMapper.class})
+@Mapper(
+    componentModel = MappingConstants.ComponentModel.SPRING,
+    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+    unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {VariantMapper.class})
 public interface OrderItemMapper {
     @Mapping(target = "id", ignore = true)
     OrderItems itemToEntity(OrderItemRequest request);
