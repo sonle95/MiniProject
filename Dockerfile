@@ -3,7 +3,7 @@ FROM gradle:jdk17-alpine AS builder
 WORKDIR /app
 COPY build.gradle.kts settings.gradle.kts ./
 COPY src ./src
-RUN gradle clean bootJar --no-daemon
+RUN ./gradlew clean build -x test
 
 # Stage 2: Create the runtime image
 FROM eclipse-temurin:17-jre-alpine
