@@ -1,0 +1,23 @@
+# Production configuration
+# To use: set environment variable SPRING_PROFILES_ACTIVE=prod
+
+app:
+  admin:
+    auto-create: false  # ❌ Disable auto-create in production!
+    # In production, create admin user manually via:
+    # 1. SQL script
+    # 2. Dashboard UI
+    # 3. Setup endpoint
+
+# Override other production settings here
+spring:
+  jpa:
+    show-sql: false  # Don't show SQL in production
+    hibernate:
+      ddl-auto: validate  # Don't auto-update schema in production
+
+logging:
+  level:
+    root: INFO
+    simpleSecurity: WARN
+    org.springframework.security: WARN
