@@ -14,10 +14,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProductVariantRepository extends JpaRepository<ProductVariant, Long> {
 
-    @Query("SELECT v FROM ProductVariant v JOIN v.stock s ORDER BY s.quantity ASC")
+    @Query("SELECT v FROM ProductVariant v LEFT JOIN v.stock s ORDER BY COALESCE(s.quantity, 0) ASC")
     Page<ProductVariant> findAllOrderByStockQuantityAsc(Pageable pageable);
 
-    @Query("SELECT v FROM ProductVariant v JOIN v.stock s ORDER BY s.quantity DESC")
+    @Query("SELECT v FROM ProductVariant v LEFT JOIN v.stock s ORDER BY COALESCE(s.quantity, 0) DESC")
     Page<ProductVariant> findAllOrderByStockQuantityDesc(Pageable pageable);
 
     boolean existsByProductIdAndColorAndSize(@NotNull Long productId, @NotBlank(message = "Color is required") @Size(max = 50, message = "Color cannot exceed 50 characters") String color, @NotBlank(message = "Size is required") @Size(max = 10, message = "Size cannot exceed 10 characters") String size);

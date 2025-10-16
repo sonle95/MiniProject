@@ -72,7 +72,10 @@ vnpay:
   order-type: other
 
 dropbox:
-  access:
-    token: ${DROPBOX_TOKEN}
+  app:
+    key: yqr2bdfvhdhwtn7
+    secret: wc89159f005erq0
+  refresh:
+    token: RKLHX7ikiVsAAAAAAAAAAREL_PQisYUIdpL4sTdTyPj2WtcrzyQL3LKWVBwAdRZB
   base:
     path: /minimalist-menswear-byson

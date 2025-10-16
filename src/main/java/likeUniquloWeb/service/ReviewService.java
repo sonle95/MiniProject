@@ -33,12 +33,10 @@ public class ReviewService {
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ReviewResponse createReview(ReviewRequest request, String token){
         User user = authenticationService.getUserFromToken(token);
-
-        // Lấy product từ variant
         ProductVariant productVariant = productVariantRepository.findById(request.getProductVariantId())
                 .orElseThrow(()-> new AppException(ErrorCode.VARIANT_NOT_FOUND));
 
-        // Check theo PRODUCT thay vì VARIANT
+
         if (reviewRepository.existsByUser_IdAndProduct_Id(user.getId(), productVariant.getProduct().getId())) {
             throw new AppException(ErrorCode.REVIEW_ALREADY_EXISTS);
         }
