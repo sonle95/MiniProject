@@ -1,11 +1,15 @@
-FROM gradle:8.14.3-jdk-alpine AS builder
+FROM gradle:8.8-jdk21 AS build
 
 WORKDIR /app
 
-COPY build.gradle.kts settings.gradle.kts ./
-COPY gradle gradle/
-COPY src ./src
-RUN ./gradlew clean build -x test
+# Copy toàn bộ source vào container
+COPY . .
+
+# Đảm bảo gradlew có quyền thực thi
+RUN chmod +x gradlew
+
+# Build jar, bỏ qua test
+RUN ./gradlew clean build -x test --no-daemon
 
 FROM eclipse-temurin:21-jre-alpine-3.22
 WORKDIR /app
